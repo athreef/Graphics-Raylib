@@ -1,0 +1,9 @@
+blib/
+.build/
+_Inline/
+*.sw*
+.DS_Store
+Graphics-Raylib-XS-*/
+Graphics-Raylib-XS-*.tar.gz
+
+

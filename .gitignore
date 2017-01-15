@@ -1,0 +1,7 @@
+.build/
+_Inline/
+*.sw*
+.DS_Store
+Graphics-Raylib-*/
+Graphics-Raylib-*.tar.gz
+

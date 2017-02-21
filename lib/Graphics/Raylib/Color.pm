@@ -28,11 +28,11 @@ Graphics::Raylib::Color - Use predefined Raylib colors or define your own
 
 =head1 DESCRIPTION
     
-    Colors you can pass to raylib.
+Colors you can pass to raylib.
 
 =head1 IMPLEMENTATION
     
-    As a color is basically a 32-bit integer (RGBA) in raylib, the constructors rgba and rgb do little more packing it into an integer and blessing it
+As a color is basically a 32-bit integer (RGBA) in raylib, the constructors rgba and rgb do little more packing it into an integer and blessing it
 
 =head1 METHODS AND ARGUMENTS
 

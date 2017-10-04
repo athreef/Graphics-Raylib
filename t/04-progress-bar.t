@@ -10,7 +10,7 @@ my $block_size = 50;
 
 my $g = Graphics::Raylib->window($block_size*10, $block_size, "Test");
 
-$g->fps(5);
+$g->fps(10);
 
 my $rect = Graphics::Raylib::Shape->rectangle(
     pos => [0,0], size => [$block_size, $block_size],

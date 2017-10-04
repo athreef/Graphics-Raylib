@@ -14,7 +14,7 @@ Graphics::Raylib::draw {
 
     Graphics::Raylib::Text::FPS->draw;
 };
-sleep 2;
+sleep 1;
 
 done_testing
 

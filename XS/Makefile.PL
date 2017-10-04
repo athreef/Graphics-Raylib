@@ -13,6 +13,7 @@ my @LIBS = (
 #   Acme::Alien::__cpu_model,
 );
 my @other_ldflags;
+#@other_ldflags = ('-L/usr/local/Cellar/glfw/3.2.1/lib -lglfw');
 if ($^O eq 'darwin') { 
     my @frameworks;
     for (@LIBS) { push @frameworks, $1 while(s/(-framework \S+)//); }
@@ -22,7 +23,6 @@ if ($^O eq 'darwin') {
 }
 
 WriteMakefile(
-    
     NAME              => 'Graphics::Raylib::XS',
     VERSION_FROM      => 'lib/Graphics/Raylib/XS.pm', # finds $VERSION, requires EU::MM from perl >= 5.5
     PREREQ_PM         => {}, # e.g., Module::Name => 1.1

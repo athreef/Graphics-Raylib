@@ -14,13 +14,13 @@ my @LIBS = (
 );
 my @other_ldflags;
 #@other_ldflags = ('-L/usr/local/Cellar/glfw/3.2.1/lib -lglfw');
-if ($^O eq 'darwin') { 
-    my @frameworks;
-    for (@LIBS) { push @frameworks, $1 while(s/(-framework \S+)//); }
-    @other_ldflags = (
-        dynamic_lib =>  { OTHERLDFLAGS => "@frameworks" },
-    );
-}
+#if ($^O eq 'darwin') {
+#    my @frameworks;
+#    for (@LIBS) { push @frameworks, $1 while(s/(-framework \S+)//); }
+#    @other_ldflags = (
+#        dynamic_lib =>  { OTHERLDFLAGS => "@frameworks" },
+#    );
+#}
 
 WriteMakefile(
     NAME              => 'Graphics::Raylib::XS',

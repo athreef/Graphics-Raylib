@@ -391,6 +391,8 @@ our %EXPORT_TAGS = ( 'all' => [ qw(
 	LoadImageRaw
 	LoadImageFromAV
     LoadImageFromAV_uninitialized_mem
+    LoadImageFromAV_transposed
+    LoadImageFromAV_transposed_uninitialized_mem
 	LoadMaterial
 	LoadModel
 	LoadModelEx
@@ -1094,6 +1096,8 @@ None by default.
   Image LoadImageRaw(const char *fileName, int width, int height, int format, int headerSize)
   Image LoadImageFromAV(SV *array_ref, SV *color_cb, int width, int height)
   Image LoadImageFromAV_uninitialized_mem(SV *array_ref, SV *color_cb, int width, int height)
+  Image LoadImageFromAV_transposed(SV *array_ref, SV *color_cb, int width, int height)
+  Image LoadImageFromAV_transposed_uninitialized_mem(SV *array_ref, SV *color_cb, int width, int height)
   Material LoadMaterial(const char *fileName)
   Model LoadModel(const char *fileName)
   Model LoadModelEx(Mesh data, int dynamic)

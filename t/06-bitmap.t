@@ -1,7 +1,4 @@
-use Test::Needs 'PDL', 'PDL::Matrix';
 use Test::More;
-use strict;
-use warnings;
 
 use Graphics::Raylib;
 use Graphics::Raylib::Shape;
@@ -12,16 +9,21 @@ my $g = Graphics::Raylib->window(150, 150); $g->fps(60);
 my $glider = Graphics::Raylib::Shape->bitmap(
     matrix => [
                 [0, 0, 0, 0, 0],
-                [0, 0, 1, 0, 0],
-                [0, 0, 0, 1, 0],
-                [0, 1, 1, 1, 0],
+                [0, 1, 0, 1, 0],
+                [0, 1, 0, 1, 0],
+                [0, 0, 1, 1, 0],
                 [0, 0, 0, 0, 0],
               ],
-    color => BLACK
+    color => BLACK,
+    transposed => 1
+    #x => 150, y => 150, # undocumented
 );
 $g->clear(WHITE);
 
-Graphics::Raylib::draw { $glider->draw };
+Graphics::Raylib::draw {
+    # $glider->rotation = 180; # shouldn't rotation be around center?
+    $glider->draw
+};
 
 sleep 1;
 

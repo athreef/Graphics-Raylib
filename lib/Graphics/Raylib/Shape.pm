@@ -207,13 +207,15 @@ sub triangle {
     sub color :lvalue { $_[0]->{color}  }
 }
 
-=item bitmap( matrix => $AoA, color => $color [ width => $screen_width, height => $screen_height ])
+=item bitmap( matrix => $AoA, color => $color, [ width => $screen_width, height => $screen_height, transpose => 0 ])
 
-Creates a texture out of a matrix for printing. C<$AoA> is an array of arrays ref. C<$screen_width> and C<$screenheight> are the size of the area on which the Matrix should be drawn. It defaults to the screen size.
+Creates a texture out of a matrix for printing. C<$AoA> is an array of arrays ref. C<$screen_width> and C<$screenheight> are the size of the area on which the Matrix should be drawn. It's optional defaults to the screen size.
 
 If C<$color> is a C<Graphics::Raylib::Color>, it will be used to color all positive $AoA elements. The space occupied by negative and zero elements stays at background color.
 
-if $color is a code reference, It will be evaluated for each matrix element, with the element's value as argument. The return type of the code reference will be used for the color. Return C<undef>, for omitting the element.
+if C<$color> is a code reference, It will be evaluated for each matrix element, with the element's value as argument. The return type of the code reference will be used for the color. Return C<undef>, for omitting the element.
+
+C<< transpose => >> determines whether the image should be drawn transposed ( x,y flipped ). It's more effecient than transposing in a separate step.
 
 Example:
 
@@ -223,16 +225,16 @@ Example:
     use PDL;
     use PDL::Matrix;
 
-    my $pdl = mpdl([
+    my $pdl = mpdl[
                      [0, 1, 1, 1, 0],
                      [1, 0, 0, 0, 0],
                      [0, 1, 1, 1 ,0],
                      [0, 0, 0, 0 ,1],
                      [0, 1, 1, 1 ,0],
-                   ])->transpose;
+                   ];
 
     my $g = Graphics::Raylib->window(240, 240);
-    $g->fps(10);
+    $g->fps(60);
 
     my $bitmap = Graphics::Raylib::Shape->bitmap(matrix => unpdl($pdl), color => YELLOW);
 
@@ -258,13 +260,20 @@ See the game of life example at L<Graphics::Raylib> (or C<t/10-game-of-life.t>) 
         my $self = shift;
         Graphics::Raylib::Shape::_bitmap($self) if $self->{rebitmap};
 
-        Graphics::Raylib::XS::DrawTexture($self->{texture}, 0, 0, Graphics::Raylib::Color::WHITE);
+        my $vector = \pack("ff", $self->{x}, $self->{y});
+        bless $vector, 'Vector2';
+        Graphics::Raylib::XS::DrawTextureEx($self->{texture}, $vector, $self->{rotation}, $self->{scale}, Graphics::Raylib::Color::WHITE);
     }
     sub matrix :lvalue {
         my $self = shift;
 
         $self->{rebitmap} = 1;
         $self->{matrix};
+    }
+    sub rotation :lvalue {
+        my $self = shift;
+
+        $self->{rotation};
     }
     sub color :lvalue { $_[0]->{color}  }
     sub DESTROY {
@@ -284,11 +293,13 @@ sub _bitmap {
     my $color = $self->{color} // Graphics::Raylib::Color::GOLD;
     $self->{color} = ref($color) eq 'CODE' ? $color : sub { shift > 0 ? $color : undef };
 
-    unless ($self->{uninitialized}) {
-        $self->{image} = LoadImageFromAV($self->{matrix}, $self->{color}, $self->{width}, $self->{height});
-    } else {
-        $self->{image} = LoadImageFromAV_uninitialized_mem($self->{matrix}, $self->{color}, $self->{width}, $self->{height});
-    }
+    my $func = $self->{transposed} && $self->{uninitialized} ? \&LoadImageFromAV_transposed_uninitialized_mem
+             : $self->{transposed}                           ? \&LoadImageFromAV_transposed
+             :                        $self->{uninitialized} ? \&LoadImageFromAV_uninitialized_mem
+             :                                                 \&LoadImageFromAV;
+
+            $self->{image} = $func->($self->{matrix}, $self->{color}, $self->{width}, $self->{height});
+
     if (defined $self->{texture}) {
         UpdateTextureFromImage($self->{texture}, $self->{image});
     } else {
@@ -301,7 +312,7 @@ sub _bitmap {
 
 sub bitmap {
     my $class = shift;
-    my $self = { uninitialized => 0, @_ };
+    my $self = { uninitialized => 0, rotation => 0, scale => 1, x => 0, y => 0, @_ };
 
     _bitmap($self);
 

@@ -12,6 +12,35 @@
 static bool ColorEqual(Color a, Color b) {
     return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 }
+typedef Rectangle ImageSet_t(Color*, Rectangle, Color, unsigned, unsigned);
+
+static Rectangle
+TransposedImageSet(Color *dst, Rectangle dst_rect, Color color, unsigned width, unsigned height)
+{ /* FIXME height/width */
+    Rectangle ret = dst_rect;
+    if (width > dst_rect.width-dst_rect.x || height > dst_rect.height-dst_rect.y)
+        return dst_rect;
+
+    if (!ColorEqual(color, BLANK)) {
+        for(unsigned i = 0; i < height; i++) {
+            for(unsigned j = 0; j < width; j++) {
+                Color *pixel = &dst[(j+dst_rect.x)*dst_rect.width + (dst_rect.y+i)];
+                *pixel = color;
+            }
+        }
+    }
+
+    ret.x += width;
+    if (ret.x >= ret.width) {
+        ret.x -= ret.width;
+        ret.y += height;
+    }
+    if (ret.y >= ret.height) {
+        ret.y -= ret.height;
+    }
+
+    return ret;
+}
 
 static Rectangle
 ImageSet(Color *dst, Rectangle dst_rect, Color color, unsigned width, unsigned height)
@@ -978,12 +1007,15 @@ LoadImageFromAV(array_ref, color_cb, width, height)
     int height
   ALIAS:
     LoadImageFromAV_uninitialized_mem = 1
+    LoadImageFromAV_transposed = 2
+    LoadImageFromAV_transposed_uninitialized_mem = 3
   INIT:
     AV *av;
     Color *pixels;
     Image img;
     int currwidth = 0;
     Rectangle where = { 0, 0, 0, 0 };
+    ImageSet_t *my_ImageSet = ImageSet;
   PPCODE:
     if (!SvROK(array_ref) || SvTYPE(SvRV(array_ref)) != SVt_PVAV)
         croak("expected ARRAY ref as first argument");
@@ -1000,16 +1032,17 @@ LoadImageFromAV(array_ref, color_cb, width, height)
         if (currwidth > where.width)
             where.width = currwidth;
     }
-    if (ix == 1) /* Looks cool, try it! */
+    if (ix & 1) /* Looks cool, try it! */
         Newx(pixels, where.height * where.width, Color);
     else
         Newxz(pixels, where.height * where.width, Color);
 
+    if (ix & 2)
+        my_ImageSet = TransposedImageSet;
+
     EXTEND(SP, 3);
     for (int i = 0; i < where.height; i++) {
-        AV *row;
-        SV** row_sv = av_fetch(av, i, 0);
-        row = (AV*)SvRV(*row_sv);
+        AV* row = (AV*)SvRV(*av_fetch(av, i, 0));
 
         for (int j = 0; j < where.width; j++) {
             SV** pixel = av_fetch(row, j, 0);
@@ -1030,7 +1063,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
             if (sv_isa(ret, "Color"))
                 color = *(Color *)SvPV_nolen(SvRV(ret));
 
-            where = ImageSet(pixels, where, color, 1, 1);
+            where = my_ImageSet(pixels, where, color, 1, 1);
 
         }
     }

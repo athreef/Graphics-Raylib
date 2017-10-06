@@ -30,6 +30,3 @@ while (!$g->exiting && $i != 20) {
 
 
 done_testing;
-
-
-

@@ -9,46 +9,7 @@
 
 #include "const-c.inc"
 
-#define o WHITE
-#define N BLACK
-    static Color sos[32*32] = { /* For debugging purposes */
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,o,o,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,o,o,o,o,o,o,o,o,
-        o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,o,
-    };
-#undef o
-#undef N
-
-static ColorEqual(Color a, Color b) {
+static bool ColorEqual(Color a, Color b) {
     return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 }
 
@@ -1008,31 +969,6 @@ LoadImageRaw(fileName, width, height, format, headerSize)
     int    height
     int    format
     int    headerSize
-
-Image
-LoadSOSImage()
-  PPCODE:
-    RETVAL = LoadImageEx(sos, 32, 32);
-    ImageResizeNN(&RETVAL, 320, 320);
-    {
-        SV * RETVALSV;
-        RETVALSV = sv_newmortal();
-        sv_setref_pvn(RETVALSV, "Image", (char *)&RETVAL, sizeof(RETVAL));
-        ST(0) = RETVALSV;
-    }
-    XSRETURN(1);
-
-void
-DrawSOSTexture()
-  INIT:
-    Image img;
-    Texture2D texture;
-  CODE:
-    img = LoadImageEx(sos, 32, 32);
-    ImageResizeNN(&img, 320, 320);
-    texture = LoadTextureFromImage(img);
-    DrawTexture(texture, 0, 0, WHITE);
-    UnloadImage(img);
 
 Image
 LoadImageFromAV(array_ref, color_cb, width, height)

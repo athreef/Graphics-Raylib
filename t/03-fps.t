@@ -17,4 +17,3 @@ Graphics::Raylib::draw {
 sleep 1;
 
 done_testing
-

@@ -15,7 +15,7 @@ use PDL::Matrix;
 
 use Graphics::Raylib;
 use Graphics::Raylib::Shape;
-use Graphics::Raylib::Color;
+use Graphics::Raylib::Color qw(:all);
 use Graphics::Raylib::Text;
 
 use PDL;
@@ -36,10 +36,7 @@ my $g = Graphics::Raylib->window($CELL_SIZE*$SIZE, $CELL_SIZE*$SIZE);
 
 $g->fps($HZ);
 
-my $text = Graphics::Raylib::Text->new(
-    color => Graphics::Raylib::Color::RED,
-    size => 20,
-);
+my $text = Graphics::Raylib::Text->new(color => RED, size => 20);
 
 my $rainbow = Graphics::Raylib::Color::rainbow(colors => 240);
 
@@ -48,13 +45,13 @@ my $bitmap = Graphics::Raylib::Shape->bitmap(
     # uninitialized => 1 # It's fun. Try it :)
 );
 
-$g->clear(Graphics::Raylib::Color::BLACK);
+$g->clear(BLACK);
 
 my $i = 0;
 while (!$g->exiting && $i < 50)
 {
     Graphics::Raylib::draw {
-        $g->clear(Graphics::Raylib::Color::BLACK);
+        $g->clear(BLACK);
 
         $bitmap->matrix = unpdl($gen);
         $bitmap->color = $rainbow->();
@@ -80,6 +77,6 @@ while (!$g->exiting && $i < 50)
     $gen = $next;
 }
 
-ok 1;
+is $i, 50;
 
 done_testing;

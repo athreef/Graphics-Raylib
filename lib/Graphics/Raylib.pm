@@ -159,7 +159,7 @@ sub DESTROY {
 
     use Graphics::Raylib;
     use Graphics::Raylib::Shape;
-    use Graphics::Raylib::Color;
+    use Graphics::Raylib::Color ':all';
     use Graphics::Raylib::Text;
 
     use PDL;
@@ -180,23 +180,20 @@ sub DESTROY {
 
     $g->fps($HZ);
 
-    my $text = Graphics::Raylib::Text->new(
-        color => Graphics::Raylib::Color::RED,
-        size => 20,
-    );
+    my $text = Graphics::Raylib::Text->new(color => RED, size => 20);
 
     my $bitmap = Graphics::Raylib::Shape->bitmap(
         matrix => unpdl($gen),
-        # color => Graphics::Raylib::Color::RED; # commented-out, we are doing it fancy
+        # color => GOLD; # commented-out, we are doing it fancy
     );
 
     my $rainbow = Graphics::Raylib::Color::rainbow(colors => 240);
 
-    $g->clear(Graphics::Raylib::Color::BLACK);
+    $g->clear(BLACK);
 
     while (!$g->exiting) {
         Graphics::Raylib::draw {
-            $g->clear(Graphics::Raylib::Color::BLACK);
+            $g->clear(BLACK);
 
             $bitmap->matrix = unpdl($gen);
             $bitmap->color = $rainbow->();

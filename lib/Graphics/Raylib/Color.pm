@@ -6,6 +6,18 @@ package Graphics::Raylib::Color;
 # VERSION
 
 use Graphics::Raylib::XS qw(:all);
+require Exporter;
+our @ISA = qw(Exporter);
+our %EXPORT_TAGS = (colors => [qw( LIGHTGRAY GRAY DARKGRAY LIGHTGREY GREY DARKGREY YELLOW GOLD
+                                   ORANGE PINK RED MAROON GREEN LIME DARKGREEN SKYBLUE BLUE
+                                   DARKBLUE PURPLE VIOLET DARKPURPL BEIGE BROWN DARKBROWN WHITE
+                                   BLACK BLANK MAGENTA RAYWHITE)]
+                   );
+Exporter::export_ok_tags('colors');
+{
+    my %seen;
+    push @{$EXPORT_TAGS{all}}, grep {!$seen{$_}++} @{$EXPORT_TAGS{$_}} foreach keys %EXPORT_TAGS;
+}
 
 =pod
 
@@ -19,8 +31,11 @@ Graphics::Raylib::Color - Use predefined Raylib colors or define your own
 =head1 SYNOPSIS
 
     use Graphics::Raylib::Color;
-
     my $color   = Graphics::Raylib::Color::BLACK;
+    # alternatively:
+    use Graphics::Raylib::Color qw(:all);
+    my $color2  = MAROON;
+
     my $gray    = Graphics::Raylib::Color::rgb(127,127,127);
     my $rainbow = Graphics::Raylib::Color::rainbow(colors => 100);
     push @colors, $rainbow->cycle for (1..100);

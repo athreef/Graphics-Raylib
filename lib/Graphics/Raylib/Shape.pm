@@ -20,11 +20,11 @@ Graphics::Raylib::Shape - Collection of drawable shapes
 
 =head1 SYNOPSIS
 
-    use Graphics::Raylib::Pixel;
-    use Graphics::Raylib::Circle;
-    use Graphics::Raylib::Rectangle;
-    use Graphics::Raylib::Triangle;
-    use Graphics::Raylib::Poly;
+    use Graphics::Raylib::Shape::Pixel;
+    use Graphics::Raylib::Shape::Circle;
+    use Graphics::Raylib::Shape::Rectangle;
+    use Graphics::Raylib::Shape::Triangle;
+    use Graphics::Raylib::Shape::Bitmap;
 
     # example
 
@@ -207,7 +207,7 @@ sub triangle {
     sub color :lvalue { $_[0]->{color}  }
 }
 
-=item bitmap( matrix => $AoA, width => $screen_width, height => $screen_height, color => $color )
+=item bitmap( matrix => $AoA, color => $color [ width => $screen_width, height => $screen_height ])
 
 Creates a texture out of a matrix for printing. C<$AoA> is an array of arrays ref. C<$screen_width> and C<$screenheight> are the size of the area on which the Matrix should be drawn. It defaults to the screen size.
 
@@ -217,39 +217,35 @@ if $color is a code reference, It will be evaluated for each matrix element, wit
 
 Example:
 
+    use Graphics::Raylib;
+    use Graphics::Raylib::Shape;
+    use Graphics::Raylib::Color ':all';
     use PDL;
     use PDL::Matrix;
 
-    my $pdl = mpdl [
+    my $pdl = mpdl([
                      [0, 1, 1, 1, 0],
                      [1, 0, 0, 0, 0],
                      [0, 1, 1, 1 ,0],
                      [0, 0, 0, 0 ,1],
                      [0, 1, 1, 1 ,0],
-                   ];
+                   ])->transpose;
 
     my $g = Graphics::Raylib->window(240, 240);
-
     $g->fps(10);
 
-    my $i = 0;
-    while (!$g->exiting)
-    {
+    my $bitmap = Graphics::Raylib::Shape->bitmap(matrix => unpdl($pdl), color => YELLOW);
 
-        my $bitmap = Graphics::Raylib::Shape->bitmap(
-            matrix => unpdl($gen),
-            color  => Graphics::Raylib::Color::YELLOW;
-        );
-
+    while (!$g->exiting) {
         Graphics::Raylib::draw {
-            $g->clear(Graphics::Raylib::Color::BLACK);
+            $g->clear(BLACK);
+            $bitmap->matrix = unpdl($pdl);
 
             $bitmap->draw;
         };
 
 
         # now do some operations on $pdl, to get next iteration
-
     }
 
 See the game of life example at L<Graphics::Raylib> (or C<t/10-game-of-life.t>) for a more complete example.
@@ -281,12 +277,8 @@ sub _bitmap {
     my $self = shift;
 
     unless (defined $self->{height} && defined $self->{width}) {
-        my $maxheight = scalar @{$self->{matrix}};
-        my $maxwidth  = max map { scalar @$_ } @{$self->{matrix}};
-
-        # cell sizes
-        $self->{width}  = GetScreenWidth()  / ($maxwidth-1);
-        $self->{height} = GetScreenHeight() / ($maxheight-1);
+        $self->{width}  = GetScreenWidth();
+        $self->{height} = GetScreenHeight();
     }
 
     my $color = $self->{color} // Graphics::Raylib::Color::GOLD;

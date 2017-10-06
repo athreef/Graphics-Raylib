@@ -982,6 +982,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
     AV *av;
     Color *pixels;
     Image img;
+    int currwidth = 0;
     Rectangle where = { 0, 0, 0, 0 };
   PPCODE:
     if (!SvROK(array_ref) || SvTYPE(SvRV(array_ref)) != SVt_PVAV)
@@ -990,14 +991,14 @@ LoadImageFromAV(array_ref, color_cb, width, height)
         croak("expected CODE ref as second argument");
 
     av = (AV*)SvRV(array_ref);
-    where.height = av_len(av);
-    for (int i = 0; i < height; i++) {
+    where.height = av_len(av) + 1;
+    for (int i = 0; i < where.height; i++) {
         SV** row_sv = av_fetch(av, i, 0);
         if (!row_sv || !SvROK(*row_sv) || SvTYPE(SvRV(*row_sv)) != SVt_PVAV)
             croak("expected ARRAY ref as rows");
-        where.width = av_len((AV*)SvRV(*row_sv));
-        if (height > where.width)
-            where.width = height;
+        currwidth = av_len((AV*)SvRV(*row_sv)) + 1;
+        if (currwidth > where.width)
+            where.width = currwidth;
     }
     if (ix == 1) /* Looks cool, try it! */
         Newx(pixels, where.height * where.width, Color);
@@ -1013,7 +1014,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
         for (int j = 0; j < where.width; j++) {
             SV** pixel = av_fetch(row, j, 0);
             if (!pixel) {
-                PerlIO_printf(PerlIO_stdout(), "No pixel @ (%d, %d)\n", i,j);
+                /* do something ? */
             }
 
             PUSHMARK(SP);
@@ -1034,7 +1035,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
         }
     }
     RETVAL = LoadImageEx(pixels, where.width, where.height);
-    ImageResizeNN(&RETVAL, where.width * width, where.height * height);
+    ImageResizeNN(&RETVAL, width, height);
     Safefree(pixels);
     {
         SV * RETVALSV;

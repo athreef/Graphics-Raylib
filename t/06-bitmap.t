@@ -1,8 +1,6 @@
 use Test::More;
 
-use Graphics::Raylib;
-use Graphics::Raylib::Shape;
-use Graphics::Raylib::Color qw(:all);
+use Graphics::Raylib '+family';
 
 my $g = Graphics::Raylib->window(150, 150); $g->fps(60);
 

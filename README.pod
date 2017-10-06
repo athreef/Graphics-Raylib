@@ -14,14 +14,14 @@ version 0.004
 
     use Graphics::Raylib;
     use Graphics::Raylib::Text;
-    use Graphics::Raylib::Color;
+    use Graphics::Raylib::Color ':all';
 
     my $g = Graphics::Raylib->window(120,20);
     $g->fps(5);
 
     my $text = Graphics::Raylib::Text->new(
         text => 'Hello World!',
-        color => Graphics::Raylib::Color::DARKGRAY,
+        color => DARKGRAY,
         size => 20,
     );
 
@@ -89,10 +89,7 @@ Begins drawing, calls C<$coderef->()> and ends drawing. See examples.
 
     my $CELL_SIZE = 3;
 
-    use Graphics::Raylib;
-    use Graphics::Raylib::Shape;
-    use Graphics::Raylib::Color ':all';
-    use Graphics::Raylib::Text;
+    use Graphics::Raylib '+family'; # one use to rule them all
 
     use PDL;
     use PDL::Matrix;

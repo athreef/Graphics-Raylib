@@ -10,7 +10,6 @@ $g->fps(40);
 
 Graphics::Raylib::draw {
     $g->clear;
-
 };
 
 sleep(1);

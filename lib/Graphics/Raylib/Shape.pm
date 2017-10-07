@@ -240,11 +240,11 @@ Example:
     my $bitmap = Graphics::Raylib::Shape->bitmap(matrix => unpdl($pdl), color => YELLOW, transposed => 1);
 
     while (!$g->exiting) {
+        $bitmap->matrix = unpdl($pdl);
+        $bitmap->rotation -= 1;
+
         Graphics::Raylib::draw {
             $g->clear(BLACK);
-            $bitmap->matrix = unpdl($pdl);
-            $bitmap->rotation -= 1;
-
             $bitmap->draw;
         };
 

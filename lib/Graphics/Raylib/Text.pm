@@ -34,10 +34,10 @@ Graphics::Raylib::Text - Output text to window
 
     while (!$g->exiting)
     {
+        $text->text = "Generation " . ($i++);
+
         Graphics::Raylib::draw {
             $g->clear(Graphics::Raylib::Color::BLACK);
-
-            $text->text = "Generation " . ($i++);
             $text->draw;
         };
     }

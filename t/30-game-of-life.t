@@ -50,14 +50,12 @@ $g->clear(BLACK);
 my $i = 0;
 while (!$g->exiting && $i < 50)
 {
+    $bitmap->matrix = unpdl($gen);
+    $bitmap->color = $rainbow->();
+    $text->text = "Generation " . ($i++);
+
     Graphics::Raylib::draw {
-        $g->clear(BLACK);
-
-        $bitmap->matrix = unpdl($gen);
-        $bitmap->color = $rainbow->();
         $bitmap->draw;
-
-        $text->text = "Generation " . ($i++);
         $text->draw;
     };
 

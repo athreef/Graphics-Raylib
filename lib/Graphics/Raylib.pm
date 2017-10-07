@@ -203,14 +203,12 @@ sub DESTROY {
     $g->clear(BLACK);
 
     while (!$g->exiting) {
+        $bitmap->matrix = unpdl($gen);
+        $bitmap->color = $rainbow->();
+        $text->text = "Generation " . ($i++);
+
         Graphics::Raylib::draw {
-            $g->clear(BLACK);
-
-            $bitmap->matrix = unpdl($gen);
-            $bitmap->color = $rainbow->();
             $bitmap->draw;
-
-            $text->text = "Generation " . ($i++);
             $text->draw;
         };
 

@@ -2,7 +2,7 @@ use Test::More;
 
 use Graphics::Raylib '+family';
 
-my $g = Graphics::Raylib->window(150, 150); $g->fps(60);
+my $g = Graphics::Raylib->window(150, 150); $g->fps(180);
 
 my $glider = Graphics::Raylib::Shape->bitmap(
     matrix => [
@@ -18,12 +18,12 @@ my $glider = Graphics::Raylib::Shape->bitmap(
 );
 $g->clear(WHITE);
 
-Graphics::Raylib::draw {
-    # $glider->rotation = 180; # shouldn't rotation be around center?
-    $glider->draw
-};
-
-sleep 1;
+while (!$g->exiting && $glider->rotation < 360) {
+    Graphics::Raylib::draw {
+        $glider->rotation += 1;
+        $glider->draw
+    }
+}
 
 ok 1;
 

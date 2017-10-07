@@ -83,20 +83,24 @@ Returns a list with the red, green, blue and alpha components of the color.
 
 =cut
 {
-package Color;
+    package Color;
 
-sub colors {
-    my ($self) = @_;
+    sub r { return unpack("C",    ${$_[0]}) }
+    sub g { return unpack("xC",   ${$_[0]}) }
+    sub b { return unpack("xxC",  ${$_[0]}) }
+    sub a { return unpack("xxxC", ${$_[0]}) }
+    sub colors {
+        my ($self) = @_;
 
-    return unpack("C4", ${$self});
-}
+        return unpack("C4", ${$self});
+    }
 
-sub stringify {
-    my ($self) = @_;
-    return sprintf '(r: %u, g: %u, b: %u, a: %u)', $self->colors;
-}
+    sub stringify {
+        my ($self) = @_;
+        return sprintf '(r: %u, g: %u, b: %u, a: %u)', $self->colors;
+    }
 
-use overload fallback => 1, '""' => 'stringify';
+    use overload fallback => 1, '""' => 'stringify';
 }
 
 =item rgb($red, $green, $blue)
@@ -104,6 +108,21 @@ use overload fallback => 1, '""' => 'stringify';
 Constructs a new Graphics::Raylib::Color instance out of an opaque color.
 Calls C<rgba> with C<$alpha = 255>.
 
+
+=item color($color_32bit)
+
+Constructs a C<Color> out of a 32 bit integer.
+
+=cut
+
+sub color {
+    return bless \pack("N", shift), 'Color'
+}
+
+{
+    package Color;
+    sub color { return unpack("N", ${$_[0]}); }
+}
 
 =back
 

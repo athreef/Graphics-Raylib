@@ -1,6 +1,5 @@
 use strict;
 use warnings;
-use Graphics::Raylib::Color;
 package Graphics::Raylib::Shape;
 
 # ABSTRACT: Collection of drawable shapes
@@ -8,6 +7,8 @@ package Graphics::Raylib::Shape;
 
 use List::Util qw(min max);
 use Graphics::Raylib::XS qw(:all);
+use Graphics::Raylib::Color;
+use Graphics::Raylib::Util;
 
 =pod
 
@@ -31,7 +32,7 @@ Graphics::Raylib::Shape - Collection of drawable shapes
     my $rect = Graphics::Raylib::Rectangle(
         pos   => [0,0],
         size  => [10,10],
-        color => Graphics::Raylib::Rectange::MAROON,
+        color => Graphics::Raylib::Color::MAROON,
     )->draw;
 
 =head1 DESCRIPTION
@@ -207,7 +208,7 @@ sub triangle {
     sub color :lvalue { $_[0]->{color}  }
 }
 
-=item bitmap( matrix => $AoA, color => $color, [ width => $screen_width, height => $screen_height, transpose => 0 ])
+=item bitmap( matrix => $AoA, color => $color, [ width => $screen_width, height => $screen_height, transpose => 0, $roatate => 0 ])
 
 Creates a texture out of a matrix for printing. C<$AoA> is an array of arrays ref. C<$screen_width> and C<$screenheight> are the size of the area on which the Matrix should be drawn. It's optional defaults to the screen size.
 
@@ -217,11 +218,11 @@ if C<$color> is a code reference, It will be evaluated for each matrix element, 
 
 C<< transpose => >> determines whether the image should be drawn transposed ( x,y flipped ). It's more effecient than transposing in a separate step.
 
+C<< rotate => >> sets an angle (in degrees) for rotation. Rotation origin is the center of the bitmap.
+
 Example:
 
-    use Graphics::Raylib;
-    use Graphics::Raylib::Shape;
-    use Graphics::Raylib::Color ':all';
+    use Graphics::Raylib '+family';
     use PDL;
     use PDL::Matrix;
 
@@ -236,12 +237,13 @@ Example:
     my $g = Graphics::Raylib->window(240, 240);
     $g->fps(60);
 
-    my $bitmap = Graphics::Raylib::Shape->bitmap(matrix => unpdl($pdl), color => YELLOW);
+    my $bitmap = Graphics::Raylib::Shape->bitmap(matrix => unpdl($pdl), color => YELLOW, transposed => 1);
 
     while (!$g->exiting) {
         Graphics::Raylib::draw {
             $g->clear(BLACK);
             $bitmap->matrix = unpdl($pdl);
+            $bitmap->rotation -= 1;
 
             $bitmap->draw;
         };
@@ -250,19 +252,28 @@ Example:
         # now do some operations on $pdl, to get next iteration
     }
 
-See the game of life example at L<Graphics::Raylib> (or C<t/10-game-of-life.t>) for a more complete example.
+
+See the game of life example at L<Graphics::Raylib> (or C<t/30-game-of-life.t>) for a more complete example.
 
 =cut
 
 {
     package Graphics::Raylib::Shape::Bitmap;
+    use Graphics::Raylib::XS;
     sub draw {
         my $self = shift;
         Graphics::Raylib::Shape::_bitmap($self) if $self->{rebitmap};
 
-        my $vector = \pack("ff", $self->{x}, $self->{y});
-        bless $vector, 'Vector2';
-        Graphics::Raylib::XS::DrawTextureEx($self->{texture}, $vector, $self->{rotation}, $self->{scale}, Graphics::Raylib::Color::WHITE);
+        Graphics::Raylib::XS::DrawTexturePro(
+            $self->{texture},
+            Graphics::Raylib::Util::rectangle(x => 0, y => 0, width => $self->{width}, height => $self->{height}),
+
+            Graphics::Raylib::Util::rectangle(x => ($self->{x} + Graphics::Raylib::XS::GetScreenWidth())/2, y => ($self->{y} + Graphics::Raylib::XS::GetScreenHeight()) / 2, width => $self->{width}*$self->{scale}, height => $self->{height}*$self->{scale}),
+
+            Graphics::Raylib::Util::vector($self->{width}*$self->{scale}/2, $self->{width}*$self->{scale}/2),
+
+            $self->{rotation}, $self->{tint});
+        #Graphics::Raylib::XS::DrawTexture($self->{texture}, 0,0, $self->{tint});
     }
     sub matrix :lvalue {
         my $self = shift;
@@ -312,7 +323,10 @@ sub _bitmap {
 
 sub bitmap {
     my $class = shift;
-    my $self = { uninitialized => 0, rotation => 0, scale => 1, x => 0, y => 0, @_ };
+    my $self = {
+        uninitialized => 0, rotation => 0, scale => 1, x => 0, y => 0,
+        tint => Graphics::Raylib::Color::WHITE, @_
+    };
 
     _bitmap($self);
 

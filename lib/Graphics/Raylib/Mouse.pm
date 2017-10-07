@@ -89,7 +89,7 @@ Retrieves cursor position if not in void context. Moves cursor to position if co
 
 =cut
 
-sub position { shift if ref $_[0];
+sub position { shift if defined $_[0] && ref $_[0];
 
     my @args = @_;
     if (@args) {
@@ -112,7 +112,7 @@ Wheel Y-axis movement
 
 =cut
 
-sub wheelmove {
+sub wheelmove { shift if defined $_[0] && ref $_[0];
     return Graphics::Raylib::XS::GetMouseWheelMove();
 }
 

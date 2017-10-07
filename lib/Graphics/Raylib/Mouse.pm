@@ -99,11 +99,13 @@ sub position { shift if defined $_[0] && ref $_[0];
         Graphics::Raylib::XS::SetMousePosition($vector);
     }
 
-    if (wantarray == 1) {
-        return (Graphics::Raylib::XS::GetMouseX(), Graphics::Raylib::XS::GetMouseY());
-    } elsif (wantarray == 0) {
-        return [Graphics::Raylib::XS::GetMouseX(), Graphics::Raylib::XS::GetMouseY()];
-    }
+    if (defined wantarray) {
+        if (wantarray) {
+            return (Graphics::Raylib::XS::GetMouseX(), Graphics::Raylib::XS::GetMouseY());
+        } else {
+            return [Graphics::Raylib::XS::GetMouseX(), Graphics::Raylib::XS::GetMouseY()];
+        }
+   }
 }
 
 =item wheelmove

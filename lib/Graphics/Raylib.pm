@@ -17,6 +17,7 @@ sub import {
             Graphics::Raylib::Color->import::into(scalar caller, ':all');
             Graphics::Raylib::Shape->import::into(scalar caller);
             Graphics::Raylib::Text ->import::into(scalar caller);
+            Graphics::Raylib::Mouse->import::into(scalar caller);
         }
     }
 }

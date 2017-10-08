@@ -324,11 +324,11 @@ sub _bitmap {
 sub bitmap {
     my $class = shift;
     my $self = {
-        uninitialized => 0, rotation => 0, scale => 1, x => 0, y => 0,
+        uninitialized => 0, deferred => 0, rotation => 0, scale => 1, x => 0, y => 0,
         tint => Graphics::Raylib::Color::WHITE, @_
     };
 
-    _bitmap($self);
+    $self->{deferred} and $self->{rebitmap} = 1 or _bitmap($self);
 
     bless $self, 'Graphics::Raylib::Shape::Bitmap';
     return $self;

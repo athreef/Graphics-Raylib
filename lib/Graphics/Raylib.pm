@@ -83,11 +83,10 @@ Constructs the Graphics::Raylib window. C<$title> is optional and defaults to C<
 sub window {
     my $class = shift;
 
-    my $self = {
-        width => $_[0],
-        height => $_[1],
-    };
-    InitWindow($self->{width}, $self->{height}, $_[2] // $0);
+    my $self = { width => shift, height => shift, title => shift // $0, @_ };
+    InitWindow($self->{width}, $self->{height}, $self->{title});
+    SetTargetFPS($self->{fps}) if defined $self->{fps};
+    ClearBackground($self->{background}) if defined $self->{background};
 
     bless $self, $class;
     return $self;
@@ -146,6 +145,12 @@ sub draw(&) {
 
     BeginDrawing();
     $block->();
+    EndDrawing();
+}
+
+sub draws(@) {
+    BeginDrawing();
+    for (@_) { $_->draw }
     EndDrawing();
 }
 

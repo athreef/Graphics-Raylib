@@ -7,4 +7,6 @@ Graphics-Raylib-XS-*/
 Graphics-Raylib-XS-*.tar.gz
 XS.c
 XS.bs
-
+const-c.inc
+const-xs.inc
+Makefile.old

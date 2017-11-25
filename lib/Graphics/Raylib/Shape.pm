@@ -156,12 +156,12 @@ Prepares a solid color rectangle for drawing. if $color is an arrayref of 2 Colo
 
 {
     package Graphics::Raylib::Shape::Rectangle;
-    use Graphics::Raylib::XS qw(DrawRectangle DrawRectangleGradient);
+    use Graphics::Raylib::XS qw(DrawRectangle DrawRectangleGradientV);
     sub draw {
         if (ref($_[0]->{color}) ne 'ARRAY') {
             DrawRectangle( @{$_[0]->{pos}}, @{$_[0]->{size}}, $_[0]->{color} )
         } else {
-            DrawRectangleGradient( @{$_[0]->{pos}}, @{$_[0]->{size}}, @{$_[0]->{color}} )
+            DrawRectangleGradientV( @{$_[0]->{pos}}, @{$_[0]->{size}}, @{$_[0]->{color}} )
         }
     }
     sub color :lvalue { $_[0]->{color}  }

@@ -844,20 +844,19 @@ __END__
 
 =head1 NAME
 
-Graphics::Raylib::XS - Perl extension for blah blah blah
+Graphics::Raylib::XS - XS wrapper around raylib
 
 =head1 SYNOPSIS
 
-  use Graphics::Raylib::XS;
-  blah blah blah
+  use Graphics::Raylib::XS ':all';
 
 =head1 DESCRIPTION
 
-Stub documentation for Graphics::Raylib::XS, created by h2xs. It looks like the
-author of the extension was negligent enough to leave the stub
-unedited.
+See L<Graphics::Raylib> for a Perlish wrapper. This XS wrapper wraps version 1.9.1-dev.
 
-Blah blah blah.
+=head2 EXPORT
+
+None by default.
 
 =head2 EXPORT
 

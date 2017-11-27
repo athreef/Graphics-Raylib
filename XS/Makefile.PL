@@ -9,7 +9,7 @@ use ExtUtils::MakeMaker;
 use Alien::raylib;
 
 my @LIBS = (
-    Alien::raylib->libs,
+    Alien::raylib->libs_static,
 #   Acme::Alien::__cpu_model,
 );
 my @other_ldflags;
@@ -31,7 +31,7 @@ WriteMakefile(
     DEFINE            => '-Wno-format',
     LIBS              => [ @LIBS ],
     @other_ldflags,
-    INC               => Alien::raylib->cflags,
+    INC               => Alien::raylib->cflags_static,
 );
 
 if  (eval {require ExtUtils::Constant; 1}) {

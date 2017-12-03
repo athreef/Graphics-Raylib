@@ -74,7 +74,7 @@ You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlish
 
 =over 4
 
-=item window($width, $height, $title)
+=item window($width, $height, [$title = $0])
 
 Constructs the Graphics::Raylib window. C<$title> is optional and defaults to C<$0>. Resources allocated for the window are freed when the handle returned by C<window> goes out of scope.
 
@@ -177,6 +177,11 @@ sub DESTROY {
     my $CELL_SIZE = 3;
 
     use Graphics::Raylib '+family'; # one use to rule them all
+    # Alternatively
+    use Graphics::Raylib::Color ':all';
+    use Graphics::Raylib::Shape;
+    use Graphics::Raylib::Text;
+    use Graphics::Raylib::Mouse;
 
     use PDL;
     use PDL::Matrix;
@@ -200,7 +205,7 @@ sub DESTROY {
 
     my $bitmap = Graphics::Raylib::Shape->bitmap(
         matrix => unpdl($gen),
-        # color => GOLD; # commented-out, we are doing it fancy
+        # color => GOLD # commented-out, we are doing it fancy
     );
 
     my $rainbow = Graphics::Raylib::Color::rainbow(colors => 240);
@@ -245,7 +250,10 @@ L<http://github.com/athreef/Graphics-Raylib>
 
 =head1 SEE ALSO
 
-L<Graphics::Raylib::XS>  L<Alien::raylib>
+L<Graphics::Raylib::Shape>
+
+L<Graphics::Raylib::XS>
+L<Alien::raylib>
 
 =head1 AUTHOR
 

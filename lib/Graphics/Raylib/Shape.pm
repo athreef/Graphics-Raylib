@@ -208,7 +208,7 @@ sub triangle {
     sub color :lvalue { $_[0]->{color}  }
 }
 
-=item bitmap( matrix => $AoA, color => $color, [ width => $screen_width, height => $screen_height, transpose => 0, $roatate => 0 ])
+=item bitmap( matrix => $AoA, color => $color, [ width => $screen_width, height => $screen_height, transposed => 0, $roatate => 0 ])
 
 Creates a texture out of a matrix for printing. C<$AoA> is an array of arrays ref. C<$screen_width> and C<$screenheight> are the size of the area on which the Matrix should be drawn. It's optional defaults to the screen size.
 
@@ -216,7 +216,7 @@ If C<$color> is a C<Graphics::Raylib::Color>, it will be used to color all posit
 
 if C<$color> is a code reference, It will be evaluated for each matrix element, with the element's value as argument. The return type of the code reference will be used for the color. Return C<undef>, for omitting the element.
 
-C<< transpose => >> determines whether the image should be drawn transposed ( x,y flipped ). It's more effecient than transposing in a separate step.
+C<< transposed => >> determines whether the image should be drawn transposed ( x,y flipped ). It's more effecient than transposing in a separate step.
 
 C<< rotate => >> sets an angle (in degrees) for rotation. Rotation origin is the center of the bitmap.
 
@@ -264,15 +264,16 @@ See the game of life example at L<Graphics::Raylib> (or C<t/30-game-of-life.t>) 
         my $self = shift;
         Graphics::Raylib::Shape::_bitmap($self) if $self->{rebitmap};
 
+        my $sourceRec = Graphics::Raylib::Util::rectangle(x => 0, y => 0, width => $self->{width}, height => $self->{height});
+        my $destRec   = Graphics::Raylib::Util::rectangle(x => ($self->{x} + Graphics::Raylib::XS::GetScreenWidth())/2, y => ($self->{y} + Graphics::Raylib::XS::GetScreenHeight()) / 2, width => $self->{width}*$self->{scale}, height => $self->{height}*$self->{scale});
+        my $origin    = Graphics::Raylib::Util::vector($self->{width}*$self->{scale}/2, $self->{height}*$self->{scale}/2);
+
         Graphics::Raylib::XS::DrawTexturePro(
             $self->{texture},
-            Graphics::Raylib::Util::rectangle(x => 0, y => 0, width => $self->{width}, height => $self->{height}),
+            $sourceRec, $destRec, $origin,
+            $self->{rotation}, $self->{tint}
+        );
 
-            Graphics::Raylib::Util::rectangle(x => ($self->{x} + Graphics::Raylib::XS::GetScreenWidth())/2, y => ($self->{y} + Graphics::Raylib::XS::GetScreenHeight()) / 2, width => $self->{width}*$self->{scale}, height => $self->{height}*$self->{scale}),
-
-            Graphics::Raylib::Util::vector($self->{width}*$self->{scale}/2, $self->{width}*$self->{scale}/2),
-
-            $self->{rotation}, $self->{tint});
         #Graphics::Raylib::XS::DrawTexture($self->{texture}, 0,0, $self->{tint});
     }
     sub matrix :lvalue {
@@ -295,6 +296,7 @@ See the game of life example at L<Graphics::Raylib> (or C<t/30-game-of-life.t>) 
 
 sub _bitmap {
     my $self = shift;
+    $self->{transposed} = $self->{transposed} // $self->{transpose};
 
     unless (defined $self->{height} && defined $self->{width}) {
         $self->{width}  = GetScreenWidth();

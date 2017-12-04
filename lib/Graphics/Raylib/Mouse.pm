@@ -4,7 +4,7 @@ package Graphics::Raylib::Mouse;
 
 use Graphics::Raylib::XS;
 
-# ABSTRACT: Deal with the Mouse
+# ABSTRACT: Deal with Mouse Input
 # VERSION
 
 =pod
@@ -13,7 +13,7 @@ use Graphics::Raylib::XS;
 
 =head1 NAME
 
-Graphics::Raylib::Mouse - Deal with the Mouse
+Graphics::Raylib::Mouse - Deal with Mouse Input
 
 
 =head1 SYNOPSIS

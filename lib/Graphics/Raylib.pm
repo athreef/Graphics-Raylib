@@ -11,18 +11,6 @@ use Graphics::Raylib::Color;
 
 use Import::Into;
 
-sub import {
-    for (@_) {
-        if ($_ eq '+family') {
-            Graphics::Raylib::Color->import::into(scalar caller, ':all');
-            Graphics::Raylib::Shape->import::into(scalar caller);
-            Graphics::Raylib::Text ->import::into(scalar caller);
-            Graphics::Raylib::Mouse->import::into(scalar caller);
-        }
-    }
-}
-
-
 =pod
 
 =encoding utf8
@@ -69,6 +57,30 @@ NOTE for ADVENTURERS: raylib is a programming library to learn videogames progra
 This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete.
 
 You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Scroll down for an example.
+
+=head1 AUTOMATIC IMPORT
+
+C<use Graphics::Raylib '+family';> can be used as a shorthand for
+
+    use Graphics::Raylib::Color ':all';
+    use Graphics::Raylib::Shape;
+    use Graphics::Raylib::Text;
+    use Graphics::Raylib::Mouse;
+    use Graphics::Raylib::Keyboard ':all';
+
+=cut
+
+sub import {
+    for (@_) {
+        if ($_ eq '+family') {
+            Graphics::Raylib::Color   ->import::into(scalar caller, ':all');
+            Graphics::Raylib::Shape   ->import::into(scalar caller);
+            Graphics::Raylib::Text    ->import::into(scalar caller);
+            Graphics::Raylib::Mouse   ->import::into(scalar caller);
+            Graphics::Raylib::Keyboard->import::into(scalar caller, ':all');
+        }
+    }
+}
 
 =head1 METHODS/SUBS AND ARGUMENTS
 
@@ -181,7 +193,6 @@ sub DESTROY {
     use Graphics::Raylib::Color ':all';
     use Graphics::Raylib::Shape;
     use Graphics::Raylib::Text;
-    use Graphics::Raylib::Mouse;
 
     use PDL;
     use PDL::Matrix;

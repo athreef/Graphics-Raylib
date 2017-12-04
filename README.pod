@@ -49,6 +49,16 @@ This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature co
 
 You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Scroll down for an example.
 
+=head1 AUTOMATIC IMPORT
+
+C<use Graphics::Raylib '+family';> can be used as a shorthand for
+
+    use Graphics::Raylib::Color ':all';
+    use Graphics::Raylib::Shape;
+    use Graphics::Raylib::Text;
+    use Graphics::Raylib::Mouse;
+    use Graphics::Raylib::Keyboard ':all';
+
 =head1 METHODS/SUBS AND ARGUMENTS
 
 =over 4
@@ -94,7 +104,6 @@ Begins drawing, calls C<$coderef->()> and ends drawing. See examples.
     use Graphics::Raylib::Color ':all';
     use Graphics::Raylib::Shape;
     use Graphics::Raylib::Text;
-    use Graphics::Raylib::Mouse;
 
     use PDL;
     use PDL::Matrix;

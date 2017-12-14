@@ -6,6 +6,7 @@ package Graphics::Raylib::Text;
 # VERSION
 
 use Graphics::Raylib::XS qw(:all);
+use Graphics::Raylib::Color;
 
 =pod
 
@@ -58,6 +59,7 @@ sub new {
     my $self = {
         pos => [0,0],
         size => 10,
+        color => Graphics::Raylib::Color::RED,
         @_
     };
 
@@ -65,7 +67,7 @@ sub new {
     return $self;
 }
 
-=item new( text => $text, color => $color, pos => [$x, $y], size => [$width, $height], font => $font, spacing => $spacing )
+=item draw
 
 Constructs a new Graphics::Raylib::Text instance. Position defaults to C<[0,0]> and size to C<10>.
 
@@ -75,8 +77,9 @@ sub draw {
     my $self = shift;
     return $self->{func}() if defined $self->{func};
 
+    return unless defined $self->{text};
     if (defined $self->{font}) {
-        DrawTextEx(
+        DrawTextEx (
             $self->{font}, $self->{text},
             $self->{pos}, $self->{size},
             $self->{spacing}, $self->{color}
@@ -86,9 +89,9 @@ sub draw {
     }
 }
 
-=item new( text => $text, color => $color, pos => [$x, $y], size => [$width, $height], font => $font, spacing => $spacing )
+=item ->text = "Text";
 
-Constructs a new Graphics::Raylib::Text instance. Position defaults to C<[0,0]> and size to C<10>.
+L-value subroutine to change text.
 
 =cut
 

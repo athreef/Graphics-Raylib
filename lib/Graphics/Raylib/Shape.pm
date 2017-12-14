@@ -304,7 +304,7 @@ sub _bitmap {
     }
 
     my $color = $self->{color} // Graphics::Raylib::Color::GOLD;
-    $self->{color} = ref($color) eq 'CODE' ? $color : sub { shift > 0 ? $color : undef };
+    $self->{color} = ref($color) eq 'CODE' ? $color : sub { (shift // 0) > 0 ? $color : undef };
 
     my $func = $self->{transposed} && $self->{uninitialized} ? \&LoadImageFromAV_transposed_uninitialized_mem
              : $self->{transposed}                           ? \&LoadImageFromAV_transposed

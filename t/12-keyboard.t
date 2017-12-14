@@ -4,9 +4,7 @@ BEGIN {
     use_ok 'Graphics::Raylib::Keyboard';
 }
 
-my $key = Graphics::Raylib::Keyboard->new;
-ok $key;
-$key->exit("<space>");
-ok $key->exit eq "<SPACE>";
+Graphics::Raylib::Keyboard::exit_key("<space>");
+is Graphics::Raylib::Keyboard::exit_key(), "<SPACE>";
 
 done_testing;

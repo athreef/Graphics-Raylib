@@ -182,8 +182,6 @@ sub DESTROY {
 
     my $HZ = 120;
     my $SIZE = 160;
-    my $MUTATION_CHANCE = 0.000;
-
     ###########
 
     my $CELL_SIZE = 3;
@@ -221,12 +219,12 @@ sub DESTROY {
 
     my $rainbow = Graphics::Raylib::Color::rainbow(colors => 240);
 
-    $g->clear(BLACK);
-
     while (!$g->exiting) {
         $bitmap->matrix = unpdl($gen);
         $bitmap->color = $rainbow->();
         $text->text = "Generation " . ($i++);
+
+        $g->clear(BLACK);
 
         Graphics::Raylib::draw {
             $bitmap->draw;
@@ -241,9 +239,6 @@ sub DESTROY {
 
         #  next gen are live cells with three neighbours or any with two
         my $next = $gen & ($neighbourhood == 4) | ($neighbourhood == 3);
-
-        # mutation
-        $next |= $neighbourhood == 2 if rand(1) < $MUTATION_CHANCE;
 
         # procreate
         $gen = $next;

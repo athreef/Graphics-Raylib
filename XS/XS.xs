@@ -1291,7 +1291,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
             call_sv(color_cb, G_SCALAR);
             SPAGAIN;
             SV *ret = POPs;
-            if (sv_isa(ret, "Color"))
+            if (sv_isa(ret, "Graphics::Raylib::XS::Color"))
                 color = *(Color *)SvPV_nolen(SvRV(ret));
 
             where = my_ImageSet(pixels, where, color, 1, 1);
@@ -1304,7 +1304,7 @@ LoadImageFromAV(array_ref, color_cb, width, height)
     {
         SV * RETVALSV;
         RETVALSV = sv_newmortal();
-        sv_setref_pvn(RETVALSV, "Image", (char *)&RETVAL, sizeof(RETVAL));
+        sv_setref_pvn(RETVALSV, "Graphics::Raylib::XS::Image", (char *)&RETVAL, sizeof(RETVAL));
         ST(0) = RETVALSV;
     }
     XSRETURN(1);

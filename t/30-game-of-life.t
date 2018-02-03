@@ -33,7 +33,8 @@ foreach (0..$SIZE) {
 
 my $gen = mpdl \@data;
 
-my $g = Graphics::Raylib->window($CELL_SIZE*$SIZE, $CELL_SIZE*$SIZE);
+my $g = Graphics::Raylib->window($CELL_SIZE*$SIZE, $CELL_SIZE*$SIZE)
+    or plan skip_all => 'No graphic device';
 
 $g->fps($HZ);
 

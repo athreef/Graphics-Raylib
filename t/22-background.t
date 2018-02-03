@@ -1,17 +1,17 @@
-use Test::More;
+use Test::More tests => 1;
 
-BEGIN {
-    use_ok 'Graphics::Raylib';
-}
+use Graphics::Raylib;
 
 my $g = Graphics::Raylib->window(50,50);
 
-$g->fps(40);
+SKIP: {
+    skip 'No graphic device', 1 unless $g;
 
-Graphics::Raylib::draw {
-    $g->clear;
-};
+    $g->fps(40);
 
-sleep(1);
-
-done_testing
+    Graphics::Raylib::draw {
+        $g->clear;
+    };
+    sleep 1;
+    ok 1;
+}

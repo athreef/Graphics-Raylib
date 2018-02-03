@@ -1290,7 +1290,7 @@ None by default.
   AudioStream InitAudioStream(unsigned int sampleRate, unsigned int sampleSize,
                                   unsigned int channels)
   void InitVrSimulator(VrDeviceInfo info)
-  void InitWindow(int width, int height, const char *data)
+  bool InitWindow(int width, int height, const char *data)
   bool IsAudioBufferProcessed(AudioStream stream)
   bool IsAudioDeviceReady(void)
   bool IsAudioStreamPlaying(AudioStream stream)

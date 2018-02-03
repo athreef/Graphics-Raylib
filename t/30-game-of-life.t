@@ -78,4 +78,4 @@ while (!$g->exiting && $i < $GENERATIONS)
 
 is $i, $GENERATIONS;
 
-done_testing;
+done_testing

@@ -11,12 +11,17 @@ our @ISA = qw(Exporter);
 our %EXPORT_TAGS = (colors => [qw( LIGHTGRAY GRAY DARKGRAY LIGHTGREY GREY DARKGREY YELLOW GOLD
                                    ORANGE PINK RED MAROON GREEN LIME DARKGREEN SKYBLUE BLUE
                                    DARKBLUE PURPLE VIOLET DARKPURPL BEIGE BROWN DARKBROWN WHITE
-                                   BLACK BLANK MAGENTA RAYWHITE)]
+                                   BLACK BLANK MAGENTA RAYWHITE)],
+                    gradients  => [qw( REDISH GREENISH BLUISH CYANISH MAGENTAISH YELLOWISH WHITISH  GRAYISH GREYISH) ]
                    );
-Exporter::export_ok_tags('colors');
+Exporter::export_ok_tags(qw(colors gradients));
 {
     my %seen;
-    push @{$EXPORT_TAGS{all}}, grep {!$seen{$_}++} @{$EXPORT_TAGS{$_}} foreach keys %EXPORT_TAGS;
+    push @{$EXPORT_TAGS{all}}, grep {!$seen{$_}++} @{$EXPORT_TAGS{$_}} foreach qw(colors);
+}
+{
+    my %seen;
+    push @{$EXPORT_TAGS{debug}}, grep {!$seen{$_}++} @{$EXPORT_TAGS{$_}} foreach keys %EXPORT_TAGS;
 }
 
 =pod
@@ -59,8 +64,10 @@ Constructs a new Graphics::Raylib::Color instance.
 
 =cut
 
+sub clamp { my $n = shift; return $n > 0xFF ? 0xFF : $n < 0x00 ? 0x00 : $n }
+
 sub rgba {
-    my $self = \pack("C4", @_);
+    my $self = \pack "C4", map { clamp $_ } @_;
 
     bless $self, 'Graphics::Raylib::XS::Color';
     return $self;
@@ -220,6 +227,20 @@ sub rainbow {
         return Graphics::Raylib::Color::rgb($r, $g, $b);
     }
 }
+
+# for easy gradient creation when debugging
+# 1D gradients
+sub REDISH     { rgb(shift() * 255, 0, 0) }
+sub GREENISH   { rgb(0, shift() * 255, 0) }
+sub BLUISH     { rgb(0, 0, shift() * 255) }
+sub GRAYISH    { my $c = shift; rgb($c, $c, $c) }
+sub GREYISH    { goto &GRAYISH; }
+# 2D gradients
+sub CYANISH    { rgb(0, shift() * 255, shift() * 255) }
+sub MAGENTAISH { rgb(shift() * 255, 0, shift() * 255) }
+sub YELLOWISH  { rgb(shift() * 255, shift() * 255, 0) }
+# 3D gradients
+sub WHITISH    { rgb(shift() * 255, shift() * 255, shift() * 255) }
 
 1;
 

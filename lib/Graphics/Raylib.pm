@@ -43,8 +43,6 @@ Graphics::Raylib - Perlish wrapper for Raylib videogame library
     }
 
 
-
-
 =head1 raylib
 
 raylib is highly inspired by Borland BGI graphics lib and by XNA framework. Allegro and SDL have also been analyzed for reference.
@@ -54,9 +52,7 @@ NOTE for ADVENTURERS: raylib is a programming library to learn videogames progra
 
 =head1 IMPLEMENTATION
 
-This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete.
-
-You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Scroll down for an example.
+This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Checkout the C<t/> test directory for examples.
 
 =head1 AUTOMATIC IMPORT
 

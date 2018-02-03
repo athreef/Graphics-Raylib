@@ -13,6 +13,6 @@ Graphics::Raylib::draw {
 
     Graphics::Raylib::Text::FPS->draw;
 };
-sleep 1;
+sleep $ENV{RAYLIB_TEST_SLEEP_SECS} // 1;
 ok 1;
 done_testing

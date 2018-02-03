@@ -90,6 +90,8 @@ sub import {
 
 Constructs the Graphics::Raylib window. C<$title> is optional and defaults to C<$0>. Resources allocated for the window are freed when the handle returned by C<window> goes out of scope.
 
+If no graphic device is available it returns an C<undef> value.
+
 =cut
 
 sub window {

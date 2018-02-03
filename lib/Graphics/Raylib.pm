@@ -7,6 +7,7 @@ package Graphics::Raylib;
 
 use Carp;
 use Graphics::Raylib::XS qw(:all);
+use Scalar::Util 'blessed';
 use Graphics::Raylib::Color;
 
 use Import::Into;
@@ -109,7 +110,7 @@ If C<$fps> is supplied, sets the frame rate to that value. Returns the frame rat
 =cut
 
 sub fps {
-    shift if $_[0]->isa(__PACKAGE__);
+    shift if blessed($_[0]) && $_[0]->isa(__PACKAGE__);
 
     my $fps = shift;
     if (defined $fps) {
@@ -127,7 +128,7 @@ Clears the background to C<$color>. C<$color> defaults to C<Graphics::Raylib::Co
 =cut
 
 sub clear {
-    shift if $_[0]->isa(__PACKAGE__);
+    shift if blessed($_[0]) && $_[0]->isa(__PACKAGE__);
 
     ClearBackground(shift // Graphics::Raylib::Color::RAYWHITE);
 }

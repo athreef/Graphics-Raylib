@@ -75,7 +75,7 @@ Constructs a new Graphics::Raylib::Text instance. Position defaults to C<[0,0]> 
 
 sub draw {
     my $self = shift;
-    return $self->{func}() if defined $self->{func};
+    return $self->{func}->() if defined $self->{func};
 
     return unless defined $self->{text};
     if (defined $self->{font}) {
@@ -113,7 +113,7 @@ An already constructed C<Graphics::Raylib::Text>, that draws FPS to the top left
 
 =cut
 
-use constant FPS => Graphics::Raylib::Text->new(func => sub { DrawFPS(0, 0) });
+use constant FPS => Graphics::Raylib::Text->new(func => sub { DrawFPS(1, 1) });
 
 
 1;

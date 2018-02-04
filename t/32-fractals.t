@@ -1,9 +1,8 @@
 use Test::More;
-use strict;
-use warnings;
 
-my $SIZE  = 150;
-my $ITERS = 100;
+my $SIZE  = 200;
+my $ITERS = 150;
+my $STEP = $ENV{RAYLIB_FRACTAL_STEP} // 25;
 my ($cX, $cY) = (-0.7, 0.27015);
 my ($moveX, $moveY) = (0, 0);
 my $zoom = 1;
@@ -19,14 +18,9 @@ my @mandelbrot = map [(0)x$SIZE], 0..$SIZE-1;
 my @args = (color => sub { shift }, width => $SIZE * 2, height => $SIZE * 2);
 my $julia      = Graphics::Raylib::Shape->bitmap(matrix => \@julia,      x => -$SIZE*2, @args);
 my $mandelbrot = Graphics::Raylib::Shape->bitmap(matrix => \@mandelbrot, x =>  $SIZE*2, @args);
-$g->fps(60);
+$g->fps(50);
 
-for (my $y = 0; $y < $SIZE; $y++) {
-    for (my $x = 0; $x < $SIZE; $x++) {
-        $julia[$y][$x]      = julia($x, $y);
-        $mandelbrot[$y][$x] = mandelbrot($x, $y);
-    }
-
+for (my $y = 0; $y <= $SIZE; $y += $STEP) {
     $g->clear;
     $julia->matrix = \@julia;
     $mandelbrot->matrix = \@mandelbrot;
@@ -35,6 +29,13 @@ for (my $y = 0; $y < $SIZE; $y++) {
         $julia->draw;
         $mandelbrot->draw;
     };
+
+    for (my $i = $y; $i < $y + $STEP; $i++) {
+        for (my $x = 0; $x < $SIZE; $x++) {
+            $julia[$i][$x]      = julia($x, $i);
+            $mandelbrot[$i][$x] = mandelbrot($x, $i);
+        }
+    }
 }
 sleep($ENV{RAYLIB_TEST_SLEEP_SECS} // 0);
 sub julia {

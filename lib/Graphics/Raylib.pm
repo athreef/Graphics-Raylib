@@ -53,7 +53,7 @@ NOTE for ADVENTURERS: raylib is a programming library to learn videogames progra
 
 =head1 IMPLEMENTATION
 
-This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Checkout the C<t/> test directory for examples.
+This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Checkout the C<t/> test directory for examples. (If you want to skip graphical tests when installing, define C<NO_GRAPHICAL_TEST> in the environment.
 
 =head1 AUTOMATIC IMPORT
 

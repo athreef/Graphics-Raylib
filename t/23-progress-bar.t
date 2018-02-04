@@ -1,13 +1,14 @@
 use Test::More;
 
+
 use Graphics::Raylib;
 use Graphics::Raylib::Shape;
 use Graphics::Raylib::Color;
 
 my $block_size = 50;
 
-my $g = Graphics::Raylib->window($block_size*10, $block_size, "Test")
-    or plan skip_all => 'No graphic device';
+my $g = Graphics::Raylib->window($block_size*10, $block_size, "Test");
+plan skip_all => 'No graphic device' if !$g or defined $ENV{NO_GRAPHICAL_TEST} or defined $ENV{NO_GRAPHICAL_TESTS};
 
 $g->fps(10);
 

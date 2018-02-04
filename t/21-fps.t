@@ -3,8 +3,8 @@ use Test::More;
 use Graphics::Raylib;
 use Graphics::Raylib::Text;
 
-my $g = Graphics::Raylib->window(200,50)
-    or plan skip_all => 'No graphic device';
+my $g = Graphics::Raylib->window(200,50);
+plan skip_all => 'No graphic device' if !$g or defined $ENV{NO_GRAPHICAL_TEST} or defined $ENV{NO_GRAPHICAL_TESTS};
 
 $g->fps(40);
 
@@ -13,6 +13,6 @@ Graphics::Raylib::draw {
 
     Graphics::Raylib::Text::FPS->draw;
 };
-sleep $ENV{RAYLIB_TEST_SLEEP_SECS} // 1;
+sleep($ENV{RAYLIB_TEST_SLEEP_SECS} // 1);
 ok 1;
 done_testing

@@ -10,8 +10,8 @@ my $zoom = 1;
 
 use Graphics::Raylib '+family';
 
-my $g = Graphics::Raylib->window($SIZE*4, $SIZE*2)
-    or plan skip_all => 'No graphic device';
+my $g = Graphics::Raylib->window($SIZE*4, $SIZE*2);
+plan skip_all => 'No graphic device' if !$g or defined $ENV{NO_GRAPHICAL_TEST} or defined $ENV{NO_GRAPHICAL_TESTS};
 
 my @julia      = map [(0)x$SIZE], 0..$SIZE-1;
 my @mandelbrot = map [(0)x$SIZE], 0..$SIZE-1;
@@ -36,7 +36,7 @@ for (my $y = 0; $y < $SIZE; $y++) {
         $mandelbrot->draw;
     };
 }
-sleep $ENV{RAYLIB_TEST_SLEEP_SECS} // 0;
+sleep($ENV{RAYLIB_TEST_SLEEP_SECS} // 0);
 sub julia {
     my ($x, $y) = @_;
     my $zx = (1.5 * ($x - $SIZE / 2) / (0.5 * $zoom * $SIZE) + $moveX);

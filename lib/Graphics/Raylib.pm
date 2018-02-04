@@ -165,6 +165,17 @@ sub draws(@) {
     EndDrawing();
 }
 
+sub timestamp {
+    return strftime('%Y-%m-%dT%H.%M.%S', gmtime(time))
+}
+
+sub screenshot {
+    shift if blessed($_[0]) && $_[0]->isa(__PACKAGE__);
+    my $file = shift // ('ScreenShot-' . timestamp . '.png');
+
+    TakeScreenshot($file);
+}
+
 sub DESTROY {
     CloseWindow();
 }

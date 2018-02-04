@@ -53,7 +53,7 @@ NOTE for ADVENTURERS: raylib is a programming library to learn videogames progra
 
 =head1 IMPLEMENTATION
 
-This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Checkout the C<t/> test directory for examples. (If you want to skip graphical tests when installing, define C<NO_GRAPHICAL_TEST> in the environment.
+This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. For an example, checkout C<t/40-3d.t>. If you want to skip graphical tests when installing, define C<NO_GRAPHICAL_TEST> in the environment.
 
 =head1 AUTOMATIC IMPORT
 
@@ -145,6 +145,7 @@ sub exiting {
 
     WindowShouldClose();
 }
+
 =item draw($coderef)
 
 Begins drawing, calls C<$coderef->()> and ends drawing. See examples.
@@ -164,6 +165,21 @@ sub draws(@) {
     for (@_) { $_->draw }
     EndDrawing();
 }
+
+=item draw3D($coderef)
+
+Begins 3D drawing, calls C<$coderef->()> and ends drawing. See examples.
+
+=cut
+
+sub draw3D(&) {
+    my $block = shift;
+
+    BeginDrawing();
+    $block->();
+    EndDrawing();
+}
+
 
 sub timestamp {
     return strftime('%Y-%m-%dT%H.%M.%S', gmtime(time))

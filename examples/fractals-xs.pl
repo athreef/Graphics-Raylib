@@ -1,6 +1,8 @@
-use Test::Needs 'Inline::C';
-use Test::More skip_all => 'is just a higher quality version of previous test';
 use Inline C;
+use Graphics::Raylib '+family';
+
+use strict;
+use warnings;
 
 my $SIZE  = 500;
 my $ITERS = 250;
@@ -9,10 +11,7 @@ my ($cX, $cY) = (-0.7, 0.27015);
 my ($moveX, $moveY) = (0, 0);
 my $zoom = 1;
 
-use Graphics::Raylib '+family';
-
 my $g = Graphics::Raylib->window($SIZE*2, $SIZE*1);
-plan skip_all => 'No graphic device' if !$g or defined $ENV{NO_GRAPHICAL_TEST} or defined $ENV{NO_GRAPHICAL_TESTS};
 
 my @julia      = map [(0)x$SIZE], 0..$SIZE-1;
 my @mandelbrot = map [(0)x$SIZE], 0..$SIZE-1;
@@ -39,7 +38,8 @@ for (my $y = 0; $y <= $SIZE; $y += $STEP) {
         }
     }
 }
-sleep($ENV{RAYLIB_TEST_SLEEP_SECS} // 0);
+sleep($ENV{RAYLIB_TEST_SLEEP_SECS} // 2);
+
 sub julia {
     my ($x, $y) = @_;
     my $i = julia_i($x, $y, $SIZE, $ITERS, $zoom, $moveX, $moveY, $cX, $cY);
@@ -50,9 +50,6 @@ sub mandelbrot {
     my $i = mandelbrot_i($x, $y, $SIZE, $ITERS);
     return Graphics::Raylib::Color::hsv(abs($i / $ITERS * 360), 1, $i > 0 ? 1 : 0);
 }
-
-ok 1;
-done_testing
 
 __END__
 __C__

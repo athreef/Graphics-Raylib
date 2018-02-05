@@ -1,3 +1,14 @@
+=begin comment
+
+   raylib [core] example - Initialize 3d mode
+
+   This example has been created using raylib 1.0 (www.raylib.com)
+   raylib is licensed under an unmodified zlib/libpng license (View raylib.h for details)
+
+   Copyright (c) 2014 Ramon Santamaria (@raysan5)
+
+=cut
+
 # NOTE This is referenced as Graphics::Raylib::XS example in docs,
 #      so don't edit to use Graphics::Raylib::Util::camera
 use Test::More;

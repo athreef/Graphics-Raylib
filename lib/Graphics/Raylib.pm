@@ -48,12 +48,16 @@ Graphics::Raylib - Perlish wrapper for Raylib videogame library
 
 raylib is highly inspired by Borland BGI graphics lib and by XNA framework. Allegro and SDL have also been analyzed for reference.
 
-NOTE for ADVENTURERS: raylib is a programming library to learn videogames programming; no fancy interface, no visual helpers, no auto-debugging... just coding in the most pure spartan-programmers way. Are you ready to learn? Jump to code examples!.
+NOTE for ADVENTURERS: raylib is a programming library to learn videogames programming; no fancy interface, no visual helpers, no auto-debugging... just coding in the most pure spartan-programmers way. Are you ready to learn? Jump to L<code examples|http://www.raylib.com/examples.html> or L<games|http://www.raylib.com/games.html>!.
 
 
 =head1 IMPLEMENTATION
 
-This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. For an example, checkout C<t/40-3d.t>. If you want to skip graphical tests when installing, define C<NO_GRAPHICAL_TEST> in the environment.
+This is a Perlish wrapper around L<Graphics::Raylib::XS>, but not yet feature complete. You can import L<Graphics::Raylib::XS> for any functions not yet exposed perlishly. Check out the C<examples/> directory for examples on how to do so.
+
+=head1 TESTING
+
+If you want to skip graphical tests when installing, define C<NO_GRAPHICAL_TEST> in the environment. These tests are also skipped automatically if no graphic device is available.
 
 =head1 AUTOMATIC IMPORT
 
@@ -281,6 +285,8 @@ sub DESTROY {
 L<http://github.com/athreef/Graphics-Raylib>
 
 =head1 SEE ALSO
+
+L<http://www.raylib.com>
 
 L<Graphics::Raylib::Shape>
 

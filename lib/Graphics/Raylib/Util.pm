@@ -5,7 +5,7 @@ package Graphics::Raylib::Util;
 # ABSTRACT: Utility functions for use With Graphics::Raylib::XS
 # VERSION
 
-use List::Util qw(min max);
+use List::Util qw(reduce);
 use Graphics::Raylib::XS qw(:all);
 use Scalar::Util 'blessed';
 use Carp;
@@ -81,6 +81,8 @@ sub vector {
 sub __vector2 { my $binstr = shift; bless \$binstr, 'Graphics::Raylib::XS::Vector2' }
 sub __vector3 { my $binstr = shift; bless \$binstr, 'Graphics::Raylib::XS::Vector3' }
 
+sub vabs { sqrt reduce { $a + $b } map({ $_ ** 2 } $_[0]->components) }
+
 {
     package Graphics::Raylib::XS::Vector2;
     sub x { return unpack(     "f", ${$_[0]}) }
@@ -90,7 +92,15 @@ sub __vector3 { my $binstr = shift; bless \$binstr, 'Graphics::Raylib::XS::Vecto
         my ($self) = @_;
         return sprintf '(%d, %d)', $self->components;
     }
-    use overload fallback => 1, '""' => 'stringify';
+    sub add {
+        my ($self, $other, $swap) = @_;
+        return Graphics::Raylib::Util::vector($self->x + $other->x, $self->y + $other->y);
+    }
+    sub equal {
+        my ($self, $other) = @_;
+        $$self eq $$other
+    }
+    use overload fallback => 1, '""' => 'stringify', '+' => 'add', '==' => 'equal', 'abs' => 'Graphics::Raylib::Util::vabs';
     use constant Zero => Graphics::Raylib::Util::vector(0,0);
 
     package Graphics::Raylib::XS::Vector3;
@@ -102,19 +112,30 @@ sub __vector3 { my $binstr = shift; bless \$binstr, 'Graphics::Raylib::XS::Vecto
         my ($self) = @_;
         return sprintf '(%d, %d, %d)', $self->components;
     }
-    use overload fallback => 1, '""' => 'stringify';
+    sub add {
+        my ($self, $other, $swap) = @_;
+        return Graphics::Raylib::Util::vector($self->x + $other->x, $self->y + $other->y, $self->z + $other->z);
+    }
+    sub equal {
+        my ($self, $other) = @_;
+        $$self eq $$other
+    }
+    use overload fallback => 1, '""' => 'stringify', '+' => 'add', '==' => 'equal', 'abs' => 'Graphics::Raylib::Util::vabs';
     use constant Zero => Graphics::Raylib::Util::vector(0,0,0);
 }
 
 
-=item rectangle(x => $x, y => $y, width => $width, height => $height)
+=item rectangle(x => $x, y => $y, width => $width, height => $height) or rectangle(position => $posVector2, size => $sizeVector2)
 
 Constructs a C<Graphics::Raylib::XS::Rectangle>.
 
 =cut
 
 sub rectangle {
-    my %p = ( x => 0, y => 0, height => 1, width => 1, @_ );
+    my %p = ( @_ );
+    ($p{x}, $p{y}) = ($p{position}->x, $p{position}->y) if defined $p{position};
+    ($p{width}, $p{height}) = ($p{size}->x, $p{size}->y) if defined $p{size};
+
     return bless \pack("i4", $p{x}, $p{y}, $p{width}, $p{height}), 'Graphics::Raylib::XS::Rectangle'
 }
 
@@ -131,7 +152,10 @@ sub rectangle {
         my ($p) = $_[0]->components;
         return sprintf '(x: %d, y: %d, width: %d, height: %d)', $p->{x}, $p->{y}, $p->{width}, $p->{height};
     }
-    use overload fallback => 1, '""' => 'stringify';
+    sub collides {
+        Graphics::Raylib::XS::CheckCollisionRecs(shift, shift)
+    }
+    use overload fallback => 1, '""' => 'stringify', 'x' => 'collides';
 }
 
 =item camera(position => $pos3d, target => $target3d, up => $up3d, fovy => $fovy)

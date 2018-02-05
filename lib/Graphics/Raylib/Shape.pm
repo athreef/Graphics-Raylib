@@ -30,9 +30,9 @@ Graphics::Raylib::Shape - Collection of drawable shapes
     # example
 
     my $rect = Graphics::Raylib::Rectangle(
-        pos   => [0,0],
-        size  => [10,10],
-        color => Graphics::Raylib::Color::MAROON,
+        position => [0,0],
+        size     => [10,10],
+        color    => Graphics::Raylib::Color::MAROON,
     )->draw;
 
 =head1 DESCRIPTION
@@ -62,7 +62,7 @@ Wrap-around progress bar example:
     $g->fps(5);
 
     my $rect = Graphics::Raylib::Shape->rectangle(
-        pos => [1,0], size => [$block_size, $block_size],
+        position => [1,0], size => [$block_size, $block_size],
         color => Graphics::Raylib::Color::DARKGREEN
     );
 
@@ -75,12 +75,12 @@ Wrap-around progress bar example:
         };
 
         $i %= 10;
-        $rect->{pos} = [$i * $block_size, 0];
+        $rect->{position} = [$i * $block_size, 0];
     }
 
 =cut
 
-=item pixel( pos => [$x, $y], color => $color )
+=item pixel( position => [$x, $y], color => $color )
 
 Prepares a single pixel for drawing.
 
@@ -89,7 +89,7 @@ Prepares a single pixel for drawing.
 {
     package Graphics::Raylib::Shape::Pixel;
     use Graphics::Raylib::XS qw(DrawPixel);
-    sub draw { DrawPixel(@{$_[0]->{pos}}, $_[0]->{color} ) }
+    sub draw { DrawPixel(@{$_[0]->{position}}, $_[0]->{color} ) }
     sub color :lvalue { $_[0]->{color}  }
 }
 sub pixel {
@@ -148,7 +148,7 @@ sub circle {
 }
 
 
-=item rectangle( pos => [$x, $y], size => [$width, $height], color => $color )
+=item rectangle( position => [$x, $y], size => [$width, $height], color => $color )
 
 Prepares a solid color rectangle for drawing. if $color is an arrayref of 2 Colors, the fill color will be a gradient of those two.
 
@@ -159,9 +159,9 @@ Prepares a solid color rectangle for drawing. if $color is an arrayref of 2 Colo
     use Graphics::Raylib::XS qw(DrawRectangle DrawRectangleGradientV);
     sub draw {
         if (ref($_[0]->{color}) ne 'ARRAY') {
-            DrawRectangle( @{$_[0]->{pos}}, @{$_[0]->{size}}, $_[0]->{color} )
+            DrawRectangle( @{$_[0]->{position}}, @{$_[0]->{size}}, $_[0]->{color} )
         } else {
-            DrawRectangleGradientV( @{$_[0]->{pos}}, @{$_[0]->{size}}, @{$_[0]->{color}} )
+            DrawRectangleGradientV( @{$_[0]->{position}}, @{$_[0]->{size}}, @{$_[0]->{color}} )
         }
     }
     sub color :lvalue { $_[0]->{color}  }

@@ -47,7 +47,7 @@ Graphics::Raylib::Text - Output text to window
 
 =over 4
 
-=item new( text => $text, color => $color, pos => [$x, $y], size => [$width, $height] )
+=item new( text => $text, color => $color, position => [$x, $y], size => [$width, $height] )
 
 Constructs a new Graphics::Raylib::Text instance. Position defaults to C<[0,0]> and size to C<10>.
 
@@ -57,7 +57,7 @@ sub new {
     my $class = shift;
 
     my $self = {
-        pos => [0,0],
+        position => [0,0],
         size => 10,
         color => Graphics::Raylib::Color::RED,
         @_
@@ -81,11 +81,11 @@ sub draw {
     if (defined $self->{font}) {
         DrawTextEx (
             $self->{font}, $self->{text},
-            $self->{pos}, $self->{size},
+            $self->{position}, $self->{size},
             $self->{spacing}, $self->{color}
         );
     } else {
-        DrawText($self->{text}, @{$self->{pos}}, $self->{size}, $self->{color});
+        DrawText($self->{text}, @{$self->{position}}, $self->{size}, $self->{color});
     }
 }
 

@@ -191,4 +191,10 @@ Copyright (C) 2017-2018 Ahmad Fatoum
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
+=head1 RAYLIB LICENSE
+
+This is an unofficial wrapper of L<http://www.raylib.com>.
+
+raylib is Copyright (c) 2013-2016 Ramon Santamaria and available under the terms of the zlib/libpng license. Refer to C<XS/LICENSE.md> for full terms.
+
 =cut

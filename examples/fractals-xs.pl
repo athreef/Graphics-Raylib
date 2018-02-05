@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 use Inline C;
 use Graphics::Raylib '+family';
 

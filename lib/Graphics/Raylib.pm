@@ -152,7 +152,7 @@ sub exiting {
 
 =item draw($coderef)
 
-Begins drawing, calls C<$coderef->()> and ends drawing. See examples.
+Begins drawing, calls C<< $coderef->() >> and ends drawing. See examples.
 
 =cut
 
@@ -279,6 +279,10 @@ sub DESTROY {
 =head2 Result
 
 =for html <iframe src="https://giphy.com/embed/3ov9jGoKzwnt4l4UQo" width="458" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/graphicsraylib-3ov9jGoKzwnt4l4UQo">via GIPHY</a></p>
+
+=head2 More?
+
+Check out the L<examples/|https://github.com/athreef/Graphics-Raylib/tree/master/examples> directory in the distribution or L<at raylib|https://github.com/raysan5/raylib/tree/master/examples>. Also check out the L<games in the repository|https://github.com/raysan5/raylib>!
 
 =head1 GIT REPOSITORY
 

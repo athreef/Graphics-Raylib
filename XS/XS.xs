@@ -1,3 +1,5 @@
+// http://www.cpantesters.org/cpan/report/bdd1ffc0-0c96-11e8-a1cf-bb670eaac09d
+#include <stdbool.h>
 #define PERL_NO_GET_CONTEXT
 #include "EXTERN.h"
 #include "perl.h"

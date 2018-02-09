@@ -1100,11 +1100,14 @@ void
 InitVrSimulator(info)
     VrDeviceInfo    info
 
-bool
+void
 InitWindow(width, height, data)
     int    width
     int    height
     const char *    data
+
+bool
+IsWindowReady()
 
 bool
 IsAudioBufferProcessed(stream)

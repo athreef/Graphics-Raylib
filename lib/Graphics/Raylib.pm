@@ -99,7 +99,8 @@ sub window {
     my $class = shift;
 
     my $self = { width => shift, height => shift, title => shift // $0, @_ };
-    InitWindow($self->{width}, $self->{height}, $self->{title}) or return;
+    InitWindow($self->{width}, $self->{height}, $self->{title});
+    IsWindowReady() or return;
     SetTargetFPS($self->{fps}) if defined $self->{fps};
     ClearBackground($self->{background}) if defined $self->{background};
 

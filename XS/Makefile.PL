@@ -16,7 +16,7 @@ my @other_ldflags;
 #@other_ldflags = ('-L/usr/local/Cellar/glfw/3.2.1/lib -lglfw');
 if ($^O eq 'darwin') { # fixed upstream in ExtUtils::MakeMaker v7.31_04
     my @frameworks;
-    for (@LIBS) { push @frameworks, $1 while(s/(-framework\s*\S+|-F\s*\S+)//); }
+    #for (@LIBS) { push @frameworks, $1 while(s/(-framework\s*\S+|-F\s*\S+)//); }
     @other_ldflags = (
         dynamic_lib =>  { OTHERLDFLAGS => "@frameworks" },
     );

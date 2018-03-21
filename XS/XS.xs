@@ -107,7 +107,7 @@ void
 BeginVrDrawing()
 
 BoundingBox
-CalculateBoundingBox(mesh)
+MeshBoundingBox(mesh)
     Mesh    mesh
 
 bool
@@ -1399,13 +1399,6 @@ LoadWaveEx(data, sampleCount, sampleRate, sampleSize, channels)
     int    sampleSize
     int    channels
 
-Matrix
-MatrixIdentity()
-
-float *
-MatrixToFloat(mat)
-    Matrix    mat
-
 int
 MeasureText(text, fontSize)
     const char *    text
@@ -1740,16 +1733,6 @@ UpdateTextureFromImage(texture, image)
 void
 UpdateVrTracking(camera)
     Camera *    camera
-
-Vector3
-Vector3One()
-
-float *
-Vector3ToFloat(vec)
-    Vector3    vec
-
-Vector3
-Vector3Zero()
 
 Wave
 WaveCopy(wave)

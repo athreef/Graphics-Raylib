@@ -1284,11 +1284,9 @@ LoadImageRaw(fileName, width, height, format, headerSize)
     int    headerSize
 
 Image
-LoadImageFromAV(array_ref, color_cb, width, height)
+LoadImageFromAV(array_ref, color_cb)
     SV *array_ref
     SV *color_cb
-    int width
-    int height
   ALIAS:
     LoadImageFromAV_uninitialized_mem = 1
     LoadImageFromAV_transposed = 2
@@ -1298,13 +1296,15 @@ LoadImageFromAV(array_ref, color_cb, width, height)
     AV *av;
     Color *pixels;
     Image img;
+    int literal_color = 0;
     int currwidth = 0;
     IntRectangle where = { 0, 0, 0, 0 };
     ImageSet_t *my_ImageSet = ImageSet;
   PPCODE:
     if (!SvROK(array_ref) || SvTYPE(SvRV(array_ref)) != SVt_PVAV)
         croak("expected ARRAY ref as first argument");
-    if (!SvROK(color_cb) || SvTYPE(SvRV(color_cb)) != SVt_PVCV)
+    literal_color = !SvOK(color_cb);
+    if (!literal_color && (!SvROK(color_cb) || SvTYPE(SvRV(color_cb)) != SVt_PVCV))
         croak("expected CODE ref as second argument");
 
     av = (AV*)SvRV(array_ref);
@@ -1336,25 +1336,29 @@ LoadImageFromAV(array_ref, color_cb, width, height)
                 /* do something ? */
             }
 
-            PUSHMARK(SP);
-            PUSHs(pixel ? *pixel : &PL_sv_undef);
-            PUSHs(sv_2mortal(newSViv(j)));
-            PUSHs(sv_2mortal(newSViv(i)));
-            PUTBACK;
-
             Color color = BLANK;
-            call_sv(color_cb, G_SCALAR);
-            SPAGAIN;
-            ret = POPs;
-            if (sv_isa(ret, "Graphics::Raylib::XS::Color"))
-                color = *(Color *)SvPV_nolen(SvRV(ret));
+            if (literal_color && pixel) {
+                // No check! stay safe
+                color = *(Color *)SvPV_nolen(SvRV(*pixel));
+            } else {
+                PUSHMARK(SP);
+                PUSHs(pixel ? *pixel : &PL_sv_undef);
+                PUSHs(sv_2mortal(newSViv(j)));
+                PUSHs(sv_2mortal(newSViv(i)));
+                PUTBACK;
+
+                call_sv(color_cb, G_SCALAR);
+                SPAGAIN;
+                SV *ret = POPs;
+                if (sv_isa(ret, "Graphics::Raylib::XS::Color"))
+                    color = *(Color *)SvPV_nolen(SvRV(ret));
+            }
 
             where = my_ImageSet(pixels, where, color, 1, 1);
 
         }
     }
     RETVAL = LoadImageEx(pixels, where.width, where.height);
-    ImageResizeNN(&RETVAL, width, height);
     Safefree(pixels);
     {
         SV * RETVALSV;

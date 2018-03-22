@@ -2,7 +2,7 @@ use strict;
 use warnings;
 package Graphics::Raylib::Util;
 
-# ABSTRACT: Utility functions for use With Graphics::Raylib::XS
+# ABSTRACT: Utility functions for use with Graphics::Raylib::XS
 # VERSION
 
 use List::Util qw(reduce);
@@ -12,12 +12,19 @@ use Carp;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our %EXPORT_TAGS = (objects => [qw(vector rectangle camera3d)]);
+our %EXPORT_TAGS = (objects => [qw(vector rectangle camera3d image)]);
 Exporter::export_ok_tags(qw(objects));
 {
     my %seen;
     push @{$EXPORT_TAGS{all}}, grep {!$seen{$_}++} @{$EXPORT_TAGS{$_}} foreach keys %EXPORT_TAGS;
 }
+use Config;
+
+our $PTR_PACK_FMT = $Config{ptrsize} == $Config{longsize}     ? 'L'
+                  : $Config{ptrsize} == $Config{intsize}      ? 'I'
+                  : $Config{ptrsize} == $Config{longlongsize} ? 'Q'
+                  : croak "Strange pointer size of $Config{ptrsize} not supported (yet!). ".
+                  __PACKAGE__."'s author would be curious to learn about the weird system you got there.";
 
 =pod
 
@@ -197,6 +204,79 @@ sub camera3d {
         my ($c) = $_[0]->components;
         return sprintf '(position: %s, target: %s, up: %s, fovy: %s, type: %s)',
                         $c->{position}, $c->{target}, $c->{up}, $c->{fovy}, $c->{type};
+    }
+    use overload fallback => 1, '""' => 'stringify';
+}
+
+=item image(data => $str, size => [$width, $height], [ mipmaps => 1, format => UNCOMPRESSED_R8G8B8A8 ])
+
+Constructs a C<Graphics::Raylib::XS::Image>.
+
+    typedef struct Image {
+        void *data;             // Image raw data
+        int width;              // Image base width
+        int height;             // Image base height
+        int mipmaps;            // Mipmap levels, 1 by default
+        int format;             // Data format (PixelFormat type)
+    } Image;
+
+=cut
+
+sub image {
+    my %i = (mipmaps => 1, format => Graphics::Raylib::XS::UNCOMPRESSED_R8G8B8A8, @_);
+
+    defined $i{data} && defined $i{width} && defined $i{height} or croak '(data, height, width) may not be undef';
+
+    my $image = pack('Pi4', $i{data}, $i{width}, $i{height}, $i{mipmaps}, $i{format});
+    return bless \$image, 'Graphics::Raylib::XS::Image';
+}
+
+{
+    package Graphics::Raylib::XS::Image;
+    #sub bytes   { goto &data }
+    sub data    {
+        my ($self, $len) = @_;
+        return unpack(defined $len ? "P$len" : $PTR_PACK_FMT, $$self)
+    }
+    sub width   { return  unpack("x[Pi0]i", ${$_[0]})  }
+    sub height  { return  unpack("x[Pi1]i", ${$_[0]})  }
+    sub size    { return [unpack("x[P]ii",  ${$_[0]})] }
+    sub mipmaps { return  unpack("x[Pi2]i", ${$_[0]})  }
+    sub format  { return  unpack("x[Pi3]i", ${$_[0]})  }
+    sub stringify {
+        return sprintf '(Image: %x [%dx%d], mipmaps: %d, format: %d)',
+                        $_[0]->data, $_[0]->width, $_[0]->height, $_[0]->mipmaps, $_[0]->format
+    }
+    use overload fallback => 1, '""' => 'stringify';
+}
+
+=begin comment
+
+Constructs a C<Graphics::Raylib::XS::Image>.
+
+    typedef struct Texture2D {
+        unsigned int id;        // OpenGL texture id
+        int width;              // Texture base width
+        int height;             // Texture base height
+        int mipmaps;            // Mipmap levels, 1 by default
+        int format;             // Data format (PixelFormat type)
+    } Texture2D;
+
+=end comment
+
+=cut
+
+{
+    package Graphics::Raylib::XS::Texture2D;
+    sub id      { return  unpack("      I", ${$_[0]})  }
+    sub width   { return  unpack("x[I]  i", ${$_[0]})  }
+    sub height  { return  unpack("x[Ii] i", ${$_[0]})  }
+    sub size    { return [unpack("x[I] ii",  ${$_[0]})] }
+    sub mipmaps { return  unpack("x[Ii2]i", ${$_[0]})  }
+    sub format  { return  unpack("x[Ii3]i", ${$_[0]})  }
+    sub stringify {
+        return sprintf '(Texture2D id:%d [%dx%d], mipmaps: %d, format: %d)',
+                        $_[0]->id, $_[0]->width, $_[0]->height, $_[0]->mipmaps, $_[0]->format
     }
     use overload fallback => 1, '""' => 'stringify';
 }

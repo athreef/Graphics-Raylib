@@ -1260,7 +1260,7 @@ LoadFontEx(fileName, fontSize, charsCount, fontChars)
 
 Image
 LoadImage(fileName)
-    const char *    fileName
+    char *    fileName
 
 Image
 LoadImageEx(pixels, width, height)

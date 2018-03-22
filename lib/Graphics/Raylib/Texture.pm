@@ -65,7 +65,6 @@ For drawing images
 =item new( pixels => $str, [width => $imgwidth, height => imgheight] ] )
 =item new( bytes => $rawbytes, [width => $imgwidth, height => imgheight] ] )
 =item new( imager => $imager, [width => $imgwidth, height => imgheight] ] )
-=item new( graph_easy => $graph_easy, [width => $imgwidth, height => imgheight] ] )
 
 Prepares the image the for drawing. The image may be specified as C<file> name, by its C<bytes>, an instance of L<Imager> or L<Graph::Easy> or as a series of C<pixels>. C<pixels>' value may be either an array ref of array refs or a string. In all cases except for C<< pixels => string >>, the C<size> can be omitted and it will be inferred from the image.
 
@@ -95,12 +94,12 @@ sub new {
 
 
     if (!$self->{texture}) {
-        $self->{image} = defined $self->{file}       ? LoadImage($self->{file})
-                       : defined $self->{matrix}     ? load_image_from_array($self)
-        #              : defined $self->{bytes}      ? load_bytes($self->{bytes})
-        #              : defined $self->{imager}     ? load_imager($self->{imager})
-        #              : defined $self->{graph_easy} ? load_graph_easy($self->{graph_easy})
-                       :                               $self->{image};
+        $self->{image} = defined $self->{file}     ? LoadImage($self->{file})
+                       : defined $self->{matrix}   ? load_image_from_array($self)
+                       : defined $self->{bytes}    ? load_bytes($self->{bytes}, $self->{width}, $self->{height}, $self->{format})
+                       : defined $self->{imager}   ? load_imager($self->{imager})
+                       #                       : defined $self->{gd_image} ? load_gd_image($self->{gd_image})
+                       :                             $self->{image};
         $self->texturize;
     }
 
@@ -146,6 +145,25 @@ sub load_image_from_array {
     return $func->($self->{matrix}, $color);
 }
 
+sub load_imager {
+    my $imager = shift;
+    my $data;
+    $imager->write(data => \$data, type => 'raw');
+    return load_bytes($data, 100, 100);#$imager->getwidth, $imager->getheight);
+}
+use Data::HexDump;
+sub load_bytes {
+    my $bytes  = shift;
+    my $width  = shift // croak "Width must be specified";
+    my $height = shift // croak "Height must be specified";
+    my $format = shift // UNCOMPRESSED_R8G8B8;
+
+    my $pixels = unpack $Graphics::Raylib::Util::PTR_PACK_FMT, pack('P', $bytes);
+    bless \$pixels, "ColorPtr";
+
+    return LoadImagePro($pixels, $width, $height, $format);
+}
+
 sub texturize {
     my $self = shift;
 
@@ -161,9 +179,11 @@ sub texturize {
 
 sub matrix :lvalue {
     my $self = shift;
+    defined $self->{matrix}
+        or croak "Graphics::Raylib::Texture instance has no underlying matrix";
 
     $self->{reload_image_from_array} = 1;
-    $self->{matrix};
+    $self->{matrix}
 }
 sub rotation :lvalue {
     my $self = shift;

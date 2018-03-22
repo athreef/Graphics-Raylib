@@ -20,9 +20,9 @@ Exporter::export_ok_tags(qw(objects));
 }
 use Config;
 
-our $PTR_PACK_FMT = $Config{ptrsize} == $Config{longsize}     ? 'L'
-                  : $Config{ptrsize} == $Config{intsize}      ? 'I'
-                  : $Config{ptrsize} == $Config{longlongsize} ? 'Q'
+our $PTR_PACK_FMT = $Config{ptrsize} == $Config{longsize}     ? 'L!'
+                  : $Config{ptrsize} == $Config{intsize}      ? 'I!'
+                  : $Config{ptrsize} == $Config{longlongsize} ? 'Q!'
                   : croak "Strange pointer size of $Config{ptrsize} not supported (yet!). ".
                   __PACKAGE__."'s author would be curious to learn about the weird system you got there.";
 

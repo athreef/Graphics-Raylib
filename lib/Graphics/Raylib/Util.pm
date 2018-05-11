@@ -12,7 +12,7 @@ use Carp;
 
 require Exporter;
 our @ISA = qw(Exporter);
-our %EXPORT_TAGS = (objects => [qw(vector rectangle camera)]);
+our %EXPORT_TAGS = (objects => [qw(vector rectangle camera3d)]);
 Exporter::export_ok_tags(qw(objects));
 {
     my %seen;
@@ -136,21 +136,21 @@ sub rectangle {
     ($p{x}, $p{y}) = ($p{position}->x, $p{position}->y) if defined $p{position};
     ($p{width}, $p{height}) = ($p{size}->x, $p{size}->y) if defined $p{size};
 
-    return bless \pack("i4", $p{x}, $p{y}, $p{width}, $p{height}), 'Graphics::Raylib::XS::Rectangle'
+    return bless \pack("f4", $p{x}, $p{y}, $p{width}, $p{height}), 'Graphics::Raylib::XS::Rectangle'
 }
 
 {
     package Graphics::Raylib::XS::Rectangle;
-    sub x      { return unpack(      "i", ${$_[0]}) }
-    sub y      { return unpack("x[i]  i", ${$_[0]}) }
-    sub width  { return unpack("x[ii] i", ${$_[0]}) }
-    sub height { return unpack("x[iii]i", ${$_[0]}) }
+    sub x      { return unpack(      "f", ${$_[0]}) }
+    sub y      { return unpack("x[f]  f", ${$_[0]}) }
+    sub width  { return unpack("x[ff] f", ${$_[0]}) }
+    sub height { return unpack("x[fff]f", ${$_[0]}) }
     sub components {
-        my ($x,$y,$w,$h) = unpack("i4", ${$_[0]}); return { x=>$x,y=>$y,width=>$w,height=>$h }
+        my ($x,$y,$w,$h) = unpack("f4", ${$_[0]}); return { x=>$x,y=>$y,width=>$w,height=>$h }
     }
     sub stringify {
         my ($p) = $_[0]->components;
-        return sprintf '(x: %d, y: %d, width: %d, height: %d)', $p->{x}, $p->{y}, $p->{width}, $p->{height};
+        return sprintf '(x: %f, y: %f, width: %f, height: %f)', $p->{x}, $p->{y}, $p->{width}, $p->{height};
     }
     sub collides {
         Graphics::Raylib::XS::CheckCollisionRecs(shift, shift)
@@ -158,43 +158,45 @@ sub rectangle {
     use overload fallback => 1, '""' => 'stringify', 'x' => 'collides';
 }
 
-=item camera(position => $pos3d, target => $target3d, up => $up3d, fovy => $fovy)
+=item camera3d(position => $pos3d, target => $target3d, up => $up3d, fovy => $fovy)
 
-Constructs a C<Graphics::Raylib::XS::Camera>.
+Constructs a C<Graphics::Raylib::XS::Camera3D>.
 
-    typedef struct Camera {
+    typedef struct Camera3D {
         Vector3 position;
         Vector3 target;
         Vector3 up;
         float fovy;
-    } Camera;
+        int type;
+    } Camera3D;
 
 =cut
 
-sub camera {
+sub camera3d {
     use constant ZERO => Graphics::Raylib::XS::Vector3::Zero;
-    my %p = (position => ZERO, target => ZERO, up => ZERO, fovy => 0, @_);
+    my %p = (position => ZERO, target => ZERO, up => ZERO, fovy => 0, type => 0, @_);
     ($p{position}, $p{target}, $p{up})
         = map { Graphics::Raylib::Util::vector($_) } $p{position}, $p{target}, $p{up};
 
-    my $camera = ${$p{position}}.${$p{target}}.${$p{up}}.pack('f', $p{fovy});
-    return bless \$camera, 'Graphics::Raylib::XS::Camera';
+    my $camera = ${$p{position}}.${$p{target}}.${$p{up}}.pack('f2', $p{fovy}, $p{type});
+    return bless \$camera, 'Graphics::Raylib::XS::Camera3D';
 }
 
 {
-    package Graphics::Raylib::XS::Camera;
-    sub position { return Graphics::Raylib::Util::vector(unpack(      "f3", ${$_[0]})) }
-    sub target   { return Graphics::Raylib::Util::vector(unpack("x[f3] f3", ${$_[0]})) }
-    sub up       { return Graphics::Raylib::Util::vector(unpack("x[f6] f3", ${$_[0]})) }
-    sub fovy     { return                                unpack("x[f9] f",  ${$_[0]})  }
+    package Graphics::Raylib::XS::Camera3D;
+    sub position { return Graphics::Raylib::Util::vector(unpack(       "f3", ${$_[0]})) }
+    sub target   { return Graphics::Raylib::Util::vector(unpack("x[f3]  f3", ${$_[0]})) }
+    sub up       { return Graphics::Raylib::Util::vector(unpack("x[f6]  f3", ${$_[0]})) }
+    sub fovy     { return                                unpack("x[f9]  f",  ${$_[0]})  }
+    sub type     { return                                unpack("x[f10] f",  ${$_[0]})  }
     sub components {
         my $self = shift;
-        return {position=>$self->position, target=>$self->target, up=>$self->up, fovy=>$self->fovy}
+        return {position=>$self->position, target=>$self->target, up=>$self->up, fovy=>$self->fovy, type=>$self->type}
     }
     sub stringify {
         my ($c) = $_[0]->components;
-        return sprintf '(position: %s, target: %s, up: %s, fovy: %s)',
-                        $c->{position}, $c->{target}, $c->{up}, $c->{fovy};
+        return sprintf '(position: %s, target: %s, up: %s, fovy: %s, type: %s)',
+                        $c->{position}, $c->{target}, $c->{up}, $c->{fovy}, $c->{type};
     }
     use overload fallback => 1, '""' => 'stringify';
 }

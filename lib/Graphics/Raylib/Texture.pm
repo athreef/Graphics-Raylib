@@ -151,7 +151,6 @@ sub load_imager {
     $imager->write(data => \$data, type => 'raw');
     return load_bytes($data, 100, 100);#$imager->getwidth, $imager->getheight);
 }
-use Data::HexDump;
 sub load_bytes {
     my $bytes  = shift;
     my $width  = shift // croak "Width must be specified";

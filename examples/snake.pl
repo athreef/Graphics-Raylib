@@ -162,10 +162,10 @@ sub UpdateGame {
         }
 
         # collision
-        if (CheckCollisionRecs(
-                rectangle(position => $snake[0]{position}, size => $snake[0]{size}),
-                rectangle(position => $fruit{position},    size => $fruit{size})
-            )) {
+        if (($snake[0]{position}->x < ($fruit{position}->x + $fruit{size}->x)
+        &&  ($snake[0]{position}->x + $snake[0]{size}->x) > $fruit{position}->x)
+        &&  ($snake[0]{position}->y < ($fruit{position}->y + $fruit{size}->y)
+        &&  ($snake[0]{position}->y + $snake[0]{size}->y) > $fruit{position}->y)) {
             $snake[$counterTail]{position} = $snakePosition[$counterTail - 1];
             $counterTail += 1;
             $fruit{active} = 0;

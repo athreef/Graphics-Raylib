@@ -175,7 +175,7 @@ sub draws(@) {
 
 =item draw3D($coderef)
 
-Begins 3D drawing, calls C<$coderef->()> and ends drawing. See examples.
+Begins 3D drawing, calls C<< $coderef->() >> and ends drawing. See examples.
 
 =cut
 

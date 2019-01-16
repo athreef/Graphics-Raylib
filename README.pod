@@ -8,7 +8,7 @@ Graphics::Raylib - Perlish wrapper for Raylib videogame library
 
 =head1 VERSION
 
-version 0.023
+version 0.024
 
 =head1 SYNOPSIS
 
@@ -88,7 +88,7 @@ Begins drawing, calls C<< $coderef->() >> and ends drawing. See examples.
 
 =item draw3D($coderef)
 
-Begins 3D drawing, calls C<$coderef->()> and ends drawing. See examples.
+Begins 3D drawing, calls C<< $coderef->() >> and ends drawing. See examples.
 
 =back
 

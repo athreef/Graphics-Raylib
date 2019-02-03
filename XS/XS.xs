@@ -10,78 +10,7 @@
 #include <raylib.h>
 
 #include "const-c.inc"
-
-typedef struct {
-    int x;
-    int y;
-    int width;
-    int height;
-} IntRectangle;
-
-static int ColorEqual(Color a, Color b) {
-    return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
-}
-typedef IntRectangle ImageSet_t(Color*, IntRectangle, Color, unsigned, unsigned);
-
-static IntRectangle
-TransposedImageSet(Color *dst, IntRectangle dst_rect, Color color, unsigned width, unsigned height)
-{ /* FIXME height/width */
-    IntRectangle ret = dst_rect;
-    if (width > dst_rect.width-dst_rect.y || height > dst_rect.height-dst_rect.x)
-        return dst_rect;
-
-    if (!ColorEqual(color, BLANK)) {
-        unsigned y, x;
-        for(y = 0; y < height; y++) {
-            for(x = 0; x < width; x++) {
-                Color *pixel = &dst[(x+dst_rect.x)*dst_rect.width + (dst_rect.y+y)];
-                *pixel = color;
-            }
-        }
-    }
-
-    ret.x += width;
-    if (ret.x >= ret.width) {
-        ret.x -= ret.width;
-        ret.y += height;
-    }
-    if (ret.y >= ret.height) {
-        ret.y -= ret.height;
-    }
-
-    return ret;
-}
-
-static IntRectangle
-ImageSet(Color *dst, IntRectangle dst_rect, Color color, unsigned width, unsigned height)
-{ /* FIXME height/width */
-    IntRectangle ret = dst_rect;
-    if (width > dst_rect.width-dst_rect.x || height > dst_rect.height-dst_rect.y)
-        return dst_rect;
-
-    if (!ColorEqual(color, BLANK)) {
-        unsigned y, x;
-        for(y = 0; y < height; y++) {
-            for(x = 0; x < width; x++) {
-                Color *pixel = &dst[(y+dst_rect.y)*dst_rect.width + (dst_rect.x+x)];
-                *pixel = color;
-            }
-        }
-    }
-
-    ret.x += width;
-    if (ret.x >= ret.width) {
-        ret.x -= ret.width;
-        ret.y += height;
-    }
-    if (ret.y >= ret.height) {
-        ret.y -= ret.height;
-    }
-
-    return ret;
-}
-
-
+#include "ImageSet.h"
 
 MODULE = Graphics::Raylib::XS        PACKAGE = Graphics::Raylib::XS
 
@@ -1363,93 +1292,6 @@ LoadImageRaw(fileName, width, height, format, headerSize)
 	int	format
 	int	headerSize
 
-Image
-LoadImageFromAV(array_ref, color_cb)
-    SV *array_ref
-    SV *color_cb
-  ALIAS:
-    LoadImageFromAV_uninitialized_mem = 1
-    LoadImageFromAV_transposed = 2
-    LoadImageFromAV_transposed_uninitialized_mem = 3
-  INIT:
-    int i;
-    AV *av;
-    Color *pixels;
-    Image img;
-    int literal_color = 0;
-    int currwidth = 0;
-    IntRectangle where = { 0, 0, 0, 0 };
-    ImageSet_t *my_ImageSet = ImageSet;
-  PPCODE:
-    if (!SvROK(array_ref) || SvTYPE(SvRV(array_ref)) != SVt_PVAV)
-        croak("expected ARRAY ref as first argument");
-    literal_color = !SvOK(color_cb);
-    if (!literal_color && (!SvROK(color_cb) || SvTYPE(SvRV(color_cb)) != SVt_PVCV))
-        croak("expected CODE ref as second argument");
-
-    av = (AV*)SvRV(array_ref);
-    where.height = av_len(av) + 1;
-    for (i = 0; i < where.height; i++) {
-        SV** row_sv = av_fetch(av, i, 0);
-        if (!row_sv || !SvROK(*row_sv) || SvTYPE(SvRV(*row_sv)) != SVt_PVAV)
-            croak("expected ARRAY ref as rows");
-        currwidth = av_len((AV*)SvRV(*row_sv)) + 1;
-        if (currwidth > where.width)
-            where.width = currwidth;
-    }
-    if (ix & 1) /* Looks cool, try it! */
-        Newx(pixels, where.height * where.width, Color);
-    else
-        Newxz(pixels, where.height * where.width, Color);
-
-    if (ix & 2)
-        my_ImageSet = TransposedImageSet;
-
-    EXTEND(SP, 3);
-    for (i = 0; i < where.height; i++) {
-        AV* row = (AV*)SvRV(*av_fetch(av, i, 0));
-
-        for (int j = 0; j < where.width; j++) {
-            SV *ret;
-            SV** pixel = av_fetch(row, j, 0);
-            if (!pixel) {
-                /* do something ? */
-            }
-
-            Color color = BLANK;
-            if (literal_color && pixel) {
-                // No check! stay safe
-                color = *(Color *)SvPV_nolen(SvRV(*pixel));
-            } else {
-                PUSHMARK(SP);
-                PUSHs(pixel ? *pixel : &PL_sv_undef);
-                PUSHs(sv_2mortal(newSViv(j)));
-                PUSHs(sv_2mortal(newSViv(i)));
-                PUTBACK;
-
-                call_sv(color_cb, G_SCALAR);
-                SPAGAIN;
-                SV *ret = POPs;
-                if (sv_isa(ret, "Graphics::Raylib::XS::Color"))
-                    color = *(Color *)SvPV_nolen(SvRV(ret));
-            }
-
-            where = my_ImageSet(pixels, where, color, 1, 1);
-
-        }
-    }
-    RETVAL = LoadImageEx(pixels, where.width, where.height);
-    Safefree(pixels);
-    {
-        SV * RETVALSV;
-        RETVALSV = sv_newmortal();
-        sv_setref_pvn(RETVALSV, "Graphics::Raylib::XS::Image", (char *)&RETVAL, sizeof(RETVAL));
-        ST(0) = RETVALSV;
-    }
-    XSRETURN(1);
-
-
-
 Material
 LoadMaterial(fileName)
 	char *	fileName
@@ -1864,13 +1706,6 @@ UpdateTexture(texture, pixels)
 	void *	pixels
 
 void
-UpdateTextureFromImage(texture, image)
-	Texture2D    texture
-	Image image
-  CODE:
-	UpdateTexture(texture, GetImageData(image));
-
-void
 UpdateVrTracking(camera)
 	Camera3D *	camera
 
@@ -1893,3 +1728,95 @@ WaveFormat(wave, sampleRate, sampleSize, channels)
 
 bool
 WindowShouldClose()
+
+Image
+LoadImageFromAV(array_ref, color_cb)
+    SV *array_ref
+    SV *color_cb
+  ALIAS:
+    LoadImageFromAV_uninitialized_mem = 1
+    LoadImageFromAV_transposed = 2
+    LoadImageFromAV_transposed_uninitialized_mem = 3
+  INIT:
+    int i;
+    AV *av;
+    Color *pixels;
+    Image img;
+    int literal_color = 0;
+    int currwidth = 0;
+    IntRectangle where = { 0, 0, 0, 0 };
+    ImageSet_t *my_ImageSet = ImageSet;
+  PPCODE:
+    if (!SvROK(array_ref) || SvTYPE(SvRV(array_ref)) != SVt_PVAV)
+        croak("expected ARRAY ref as first argument");
+    literal_color = !SvOK(color_cb);
+    if (!literal_color && (!SvROK(color_cb) || SvTYPE(SvRV(color_cb)) != SVt_PVCV))
+        croak("expected CODE ref as second argument");
+
+    av = (AV*)SvRV(array_ref);
+    where.height = av_len(av) + 1;
+    for (i = 0; i < where.height; i++) {
+        SV** row_sv = av_fetch(av, i, 0);
+        if (!row_sv || !SvROK(*row_sv) || SvTYPE(SvRV(*row_sv)) != SVt_PVAV)
+            croak("expected ARRAY ref as rows");
+        currwidth = av_len((AV*)SvRV(*row_sv)) + 1;
+        if (currwidth > where.width)
+            where.width = currwidth;
+    }
+    if (ix & 1) /* Looks cool, try it! */
+        Newx(pixels, where.height * where.width, Color);
+    else
+        Newxz(pixels, where.height * where.width, Color);
+
+    if (ix & 2)
+        my_ImageSet = TransposedImageSet;
+
+    EXTEND(SP, 3);
+    for (i = 0; i < where.height; i++) {
+        AV* row = (AV*)SvRV(*av_fetch(av, i, 0));
+
+        for (int j = 0; j < where.width; j++) {
+            SV *ret;
+            SV** pixel = av_fetch(row, j, 0);
+            if (!pixel) {
+                /* do something ? */
+            }
+
+            Color color = BLANK;
+            if (literal_color && pixel) {
+                // No check! stay safe
+                color = *(Color *)SvPV_nolen(SvRV(*pixel));
+            } else {
+                PUSHMARK(SP);
+                PUSHs(pixel ? *pixel : &PL_sv_undef);
+                PUSHs(sv_2mortal(newSViv(j)));
+                PUSHs(sv_2mortal(newSViv(i)));
+                PUTBACK;
+
+                call_sv(color_cb, G_SCALAR);
+                SPAGAIN;
+                SV *ret = POPs;
+                if (sv_isa(ret, "Graphics::Raylib::XS::Color"))
+                    color = *(Color *)SvPV_nolen(SvRV(ret));
+            }
+
+            where = my_ImageSet(pixels, where, color, 1, 1);
+
+        }
+    }
+    RETVAL = LoadImageEx(pixels, where.width, where.height);
+    Safefree(pixels);
+    {
+        SV * RETVALSV;
+        RETVALSV = sv_newmortal();
+        sv_setref_pvn(RETVALSV, "Graphics::Raylib::XS::Image", (char *)&RETVAL, sizeof(RETVAL));
+        ST(0) = RETVALSV;
+    }
+    XSRETURN(1);
+
+void
+UpdateTextureFromImage(texture, image)
+	Texture2D    texture
+	Image image
+  CODE:
+	UpdateTexture(texture, GetImageData(image));
